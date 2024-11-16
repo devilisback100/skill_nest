@@ -1,0 +1,136 @@
+.update-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.update-modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+}
+
+input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    margin-left: 10px;
+}
+
+.cancel-button:hover {
+    background-color: #e53935;
+}
+
+.skills-selector {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.skills-selector select {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.skill-item {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.skill-item button {
+    margin-left: 10px;
+    background-color: #f44336;
+    padding: 5px 10px;
+    font-size: 14px;
+}
+
+.skill-item button:hover {
+    background-color: #e53935;
+}
+
+h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.points {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+    text-align: center;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
