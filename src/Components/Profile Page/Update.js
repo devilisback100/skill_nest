@@ -178,8 +178,7 @@ function Update({ userData, setUserData, closeModal }) {
             });
             closeModal();
         } catch (error) {
-            console.error('Error updating profile:', error);
-            alert('Failed to update profile.');
+           
         } finally {
             setLoading(false);
         }

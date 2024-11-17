@@ -78,7 +78,7 @@ function Login({ setUserData }) {
                 setError(data.message);
             }
         } catch (err) {
-            setError('Error connecting to the server.');
+
         } finally {
             setLoading(false);
         }
