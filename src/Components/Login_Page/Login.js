@@ -12,7 +12,7 @@ function Login({ setUserData }) {
         USN: '',
         password: '',
         name: '',
-        email: ''
+        email: '',
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -24,7 +24,7 @@ function Login({ setUserData }) {
             const response = await fetch('https://skill-nest-backend.onrender.com/check_usn_password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usn, password })
+                body: JSON.stringify({ usn, password }),
             });
 
             const data = await response.json();
@@ -42,14 +42,26 @@ function Login({ setUserData }) {
     const handleNewUserSubmit = async () => {
         try {
             setLoading(true);
+
+            // Add default properties to the new user data
+            const userPayload = {
+                ...newUserData,
+                profile_photo: 'path/to/profile/photo.jpg',
+                points: 0,
+                prev_month_points: 0,
+                admin: false,
+                'Soft-skills': [],
+                'Tech-skills': {},
+            };
+
             const response = await fetch('https://skill-nest-backend.onrender.com/add_new_user', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     current_usn: adminUSN,
                     current_password: adminPassword,
-                    new_user_data: newUserData
-                })
+                    new_user_data: userPayload,
+                }),
             });
 
             const data = await response.json();
@@ -60,7 +72,7 @@ function Login({ setUserData }) {
                     USN: '',
                     password: '',
                     name: '',
-                    email: ''
+                    email: '',
                 });
             } else {
                 setError(data.message);

@@ -113,15 +113,26 @@ function Update({ userData, setUserData, closeModal }) {
     const handleUpdateProfile = async () => {
         setLoading(true);
 
-        const updatedData = {
-            email,
-            softSkills,
-            techSkills,
-            // Add new points to the current points instead of replacing them
-            totalPoints: userData.points + calculateTotalPoints(),
-        };
-
         try {
+            // Recalculate the total points based on the updated skills
+            const calculateTotalPoints = () => {
+                let totalSoftSkillPoints = softSkills.reduce(
+                    (sum, skill) => sum + (softSkillsPoints[skill] || 0),
+                    0
+                );
+
+                let totalTechSkillPoints = Object.keys(techSkills).reduce(
+                    (sum, skill) => sum + (techSkillPoints[skill] || 0),
+                    0
+                );
+
+                return totalSoftSkillPoints + totalTechSkillPoints;
+            };
+
+            // Calculate the new total points
+            const updatedPoints = calculateTotalPoints();
+
+            // Update the database
             const updateUserData = async (route, data) => {
                 const response = await fetch(`https://skill-nest-backend.onrender.com/${route}`, {
                     method: 'POST',
@@ -153,18 +164,17 @@ function Update({ userData, setUserData, closeModal }) {
                 await updateUserData('update_tech_skills', { usn: userData.USN, password: userData.password, new_tech_skills: techSkills });
             }
 
-            // Update the total points if it changes
-            if (updatedData.totalPoints !== userData.points) {
-                await updateUserData('update_points', { usn: userData.USN, password: userData.password, new_points: updatedData.totalPoints });
-            }
+            // Update total points in the database
+            await updateUserData('update_points', { usn: userData.USN, password: userData.password, new_points: updatedPoints });
 
+            // Update the local state with the new data
             alert('Profile updated successfully!');
             setUserData({
                 ...userData,
                 email,
                 'Soft-skills': softSkills,
                 'Tech-skills': techSkills,
-                points: updatedData.totalPoints
+                points: updatedPoints, // Replace the previous points with the recalculated total points
             });
             closeModal();
         } catch (error) {
@@ -174,6 +184,8 @@ function Update({ userData, setUserData, closeModal }) {
             setLoading(false);
         }
     };
+
+
 
 
     return (

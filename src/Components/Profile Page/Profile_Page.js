@@ -13,7 +13,6 @@ const ProfilePage = ({ userData, setUserData }) => {
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
 
     // Log userData to confirm it's being passed properly
-    console.log(userData);
 
     // If userData is passed correctly, update the state
     useEffect(() => {
