@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Profile_page.css';
 import Update from './Update'; // Import the Update component
 
-const ProfilePage = ({ userData, setUserData }) => {
+const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints }) => {
     const [name, setName] = useState(userData?.name || 'N/A');
     const [email, setEmail] = useState(userData?.email || 'N/A');
     const [usn, setUsn] = useState(userData?.usn || 'N/A');
@@ -73,6 +73,8 @@ const ProfilePage = ({ userData, setUserData }) => {
                 <Update
                     userData={userData}
                     setUserData={setUserData}
+                    techSkillPoints={techSkillPoints}
+                    softSkillsPoints={softSkillsPoints}
                     closeModal={() => setUpdateModalVisible(false)}
                 />
             )}
