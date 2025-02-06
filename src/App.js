@@ -3,13 +3,53 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-ro
 import Login from '../src/Components/Login_Page/Login';
 import ProfilePage from '../src/Components/Profile Page/Profile_Page';
 import Leaderboard from '../src/Components/Leaderboard/Leaderboard';
+import Projects from '../src/Components/Profile Page/Projects';
 import './App.css';
 
 function App() {
   const [userData, setUserData] = useState(null);
 
-  // Centralized Tech Skills and Soft Skills
   const techSkillPoints = {
+    // AI/ML Skills
+    "Machine Learning": 85,
+    "Deep Learning": 90,
+    "Artificial Intelligence": 90,
+    "Neural Networks": 85,
+    "Artificial Neural Networks (ANN)": 85,
+    "Convolutional Neural Networks (CNN)": 88,
+    "Recurrent Neural Networks (RNN)": 88,
+    "Long Short-Term Memory (LSTM)": 88,
+    "Transformers": 92,
+    "Transfer Learning": 85,
+    "Reinforcement Learning": 88,
+    "Natural Language Processing": 87,
+    "Computer Vision": 87,
+    "GANs": 90,
+    "AutoML": 82,
+    "Data Mining": 80,
+    "Feature Engineering": 75,
+    "Model Deployment": 78,
+    "MLOps": 85,
+    "BERT": 88,
+    "GPT": 90,
+    "Time Series Analysis": 82,
+    "Recommendation Systems": 83,
+    "Sentiment Analysis": 80,
+    "Object Detection": 85,
+    "Image Segmentation": 85,
+    "TensorFlow": 80,
+    "PyTorch": 85,
+    "Scikit-learn": 75,
+    "Keras": 78,
+    "FastAI": 80,
+    "Pandas": 65,
+    "NumPy": 65,
+    "OpenCV": 75,
+    "Hugging Face": 85,
+    "XGBoost": 78,
+    "LightGBM": 78,
+
+    // Existing Skills
     "JavaScript": 60,
     "React.js": 70,
     "Python": 70,
@@ -31,20 +71,13 @@ function App() {
     "GitHub": 40,
     "Git": 45,
     "Firebase": 70,
-    "TensorFlow": 80,
-    "PyTorch": 85,
-    "Scikit-learn": 65,
-    "Pandas": 50,
-    "NumPy": 45,
-    "React Native": 75,
-    "Next.js": 80,
     "Tailwind CSS": 50,
     "Bootstrap": 35,
+    "Emotional Intelligence": 20,
     "GraphQL": 75,
     "TypeScript": 70,
+    "Organization": 15,
     "Dart": 65,
-    "XGBoost": 70,
-    "LightGBM": 75,
     "GameMaker Studio": 55,
     "Jenkins": 70,
     "Blender": 60,
@@ -52,6 +85,16 @@ function App() {
     "Three.js": 85,
     "Gatsby.js": 70,
     "Phaser": 65,
+    "HTML": 50,
+    "CSS": 50,
+    "VS Code": 40,
+    "Vercel": 45,
+    "Render": 45,
+    "Netlify": 45,
+    "Heroku": 50,
+    "Postman": 40,
+    "Figma": 50,
+    "JIRA": 40
   };
 
   const softSkillsPoints = {
@@ -82,6 +125,7 @@ function App() {
           <>
             <Link to="/profile"><button>Profile</button></Link>
             <Link to="/leaderboard"><button>Leaderboard</button></Link>
+            <Link to="/projects"><button>Projects</button></Link>
             <button onClick={handleSignOut}>Sign Out</button>
           </>
         ) : null}
@@ -105,9 +149,7 @@ function App() {
             ) : (
               <Navigate to="/" />
             )
-          }
-        />
-        <Route
+          }        />        <Route
           path="/leaderboard"
           element={
             userData ? (
@@ -115,6 +157,19 @@ function App() {
                 userData={userData}
                 techSkillPoints={techSkillPoints}
                 softSkillsPoints={softSkillsPoints}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            userData ? (
+              <Projects
+                techSkillPoints={techSkillPoints}
+                userData={userData}
               />
             ) : (
               <Navigate to="/" />

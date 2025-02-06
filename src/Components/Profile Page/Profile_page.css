@@ -65,6 +65,11 @@ h3 {
     color: #333;
 }
 
+.used-skill {
+    color: #007bff;
+    font-weight: bold;
+}
+
 /* Points Section */
 .total-points {
     display: flex;
@@ -190,6 +195,62 @@ button:focus {
     background-color: #d32f2f;
 }
 
+/* Projects Section */
+.projects-list {
+    margin-top: 10px;
+}
+
+.project-item {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.project-item h4 {
+    margin: 0 0 5px 0;
+}
+
+.project-item p {
+    margin: 0 0 5px 0;
+}
+
+.project-item a {
+    display: block;
+    margin-bottom: 5px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.project-item a:hover {
+    text-decoration: underline;
+}
+
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.skill-item {
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.team-members-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.team-member-item {
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .profile-container {
@@ -210,4 +271,8 @@ button:focus {
     .update-modal {
         width: 90%;
     }
+}
+.used-skill {
+    color: red;
+    /* Change this to the color you want */
 }

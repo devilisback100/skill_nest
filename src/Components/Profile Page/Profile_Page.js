@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Profile_page.css';
-import Update from './Update'; // Import the Update component
+import Update from './Update';
 
 const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints }) => {
     const [name, setName] = useState(userData?.name || 'N/A');
@@ -8,24 +8,65 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
     const [usn, setUsn] = useState(userData?.usn || 'N/A');
     const [prevMonthPoints, setPrevMonthPoints] = useState(userData?.prev_month_points || 0);
     const [totalPoints, setTotalPoints] = useState(userData?.points || 0);
-    const [techSkills, setTechSkills] = useState(userData?.techSkills || {}); // Directly use userData for techSkills
-    const [softSkills, setSoftSkills] = useState(userData?.softSkills || []); // Directly use userData for softSkills
+    const [techSkills, setTechSkills] = useState(userData?.['Tech-skills'] || {});
+    const [softSkills, setSoftSkills] = useState(userData?.['Soft-skills'] || []);
+    const [projects, setProjects] = useState([]);
     const [updateModalVisible, setUpdateModalVisible] = useState(false);
+    const [projectsVisible, setProjectsVisible] = useState(false);
 
-    // Log userData to confirm it's being passed properly
-
-    // If userData is passed correctly, update the state
     useEffect(() => {
         if (userData) {
             setTechSkills(userData['Tech-skills'] || {});
             setSoftSkills(userData['Soft-skills'] || []);
+            setProjects(userData.projects || []);
             setName(userData.name || 'N/A');
             setEmail(userData.email || 'N/A');
             setUsn(userData.USN || 'N/A');
             setPrevMonthPoints(userData.prev_month_points || 0);
             setTotalPoints(userData.points || 0);
+
+            fetch('https://skill-nest-backend.onrender.com/get_projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usn: userData.USN })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        setProjects(data.data || []);
+                    } else {
+                        console.error('Failed to fetch projects.');
+                    }
+                })
+                .catch(err => console.error('Error fetching projects:', err));
         }
-    }, [userData]); // Re-run when userData changes
+    }, [userData]);
+
+    const getUsedSkills = () => {
+        const usedSkills = new Set();
+        if (projects && projects.length > 0) {
+            projects.forEach(project => {
+                if (project.skills_needed) {
+                    project.skills_needed.forEach(skill => usedSkills.add(skill));
+                }
+            });
+        }
+        return usedSkills;
+    };
+
+    const usedSkills = getUsedSkills();
+
+    const sortedTechSkills = Object.keys(techSkills).sort((a, b) => {
+        if (usedSkills.has(a) && !usedSkills.has(b)) return -1;
+        if (!usedSkills.has(a) && usedSkills.has(b)) return 1;
+        return a.localeCompare(b);
+    });
+
+    const sortedSoftSkills = softSkills.sort((a, b) => {
+        if (usedSkills.has(a) && !usedSkills.has(b)) return -1;
+        if (!usedSkills.has(a) && usedSkills.has(b)) return 1;
+        return a.localeCompare(b);
+    });
 
     return (
         <div className="profile-container">
@@ -49,26 +90,51 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
                     <span>Total Points:</span><p>{totalPoints}</p>
                 </div>
 
-                {/* Display Tech Skills */}
                 <div className="info">
                     <span>Tech Skills:</span>
-                    <p>{techSkills && Object.keys(techSkills).length > 0
-                        ? Object.entries(techSkills).map(([skill, points]) => `${skill}: ${points}`).join(', ')
-                        : 'No tech skills added'}</p>
+                    <p>
+                        {sortedTechSkills.length > 0
+                            ? sortedTechSkills.map((skill, index) => (
+                                <React.Fragment key={skill}>
+                                    {index > 0 && ', '}
+                                    <span
+                                        style={{ 
+                                            color: usedSkills.has(skill) ? '#007bff' : 'inherit',
+                                            fontWeight: usedSkills.has(skill) ? 'bold' : 'normal'
+                                        }}
+                                    >
+                                        {skill}
+                                    </span>
+                                </React.Fragment>
+                            ))
+                            : 'No tech skills added'}
+                    </p>
                 </div>
 
-                {/* Display Soft Skills */}
                 <div className="info">
                     <span>Soft Skills:</span>
-                    <p>{softSkills && softSkills.length > 0
-                        ? softSkills.join(', ')
-                        : 'No soft skills added'}</p>
+                    <p>
+                        {sortedSoftSkills.length > 0
+                            ? sortedSoftSkills.map((skill, index) => (
+                                <React.Fragment key={skill}>
+                                    {index > 0 && ', '}
+                                    <span
+                                        style={{ 
+                                            color: usedSkills.has(skill) ? '#007bff' : 'inherit',
+                                            fontWeight: usedSkills.has(skill) ? 'bold' : 'normal'
+                                        }}
+                                    >
+                                        {skill}
+                                    </span>
+                                </React.Fragment>
+                            ))
+                            : 'No soft skills added'}
+                    </p>
                 </div>
 
                 <button onClick={() => setUpdateModalVisible(true)}>Edit Profile</button>
             </div>
 
-            {/* Update Modal */}
             {updateModalVisible && (
                 <Update
                     userData={userData}
@@ -77,6 +143,38 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
                     softSkillsPoints={softSkillsPoints}
                     closeModal={() => setUpdateModalVisible(false)}
                 />
+            )}
+
+            {projectsVisible && (
+                <div className="projects-section">
+                    <h3>Your Projects</h3>
+                    <div className="projects-list">
+                        {projects.length > 0 ? projects.map((project, index) => (
+                            <div key={index} className="project-item">
+                                <h4>{project.title}</h4>
+                                <p>{project.description}</p>
+                                <a href={project.live_url} target="_blank" rel="noopener noreferrer">Live URL</a>
+                                <a href={project.github_url} target="_blank" rel="noopener noreferrer">GitHub URL</a>
+                                <div className="skills-list">
+                                    {project.skills_needed.map((skill, index) => (
+                                        <span key={index} className="skill-item">
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="team-members-list">
+                                    {project.team_members.map((member, index) => (
+                                        <span key={index} className="team-member-item">
+                                            {member}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )) : <p>No projects added</p>}
+                    </div>
+                    <button onClick={() => setProjectsVisible(false)}>Close Projects</button>
+                    <button onClick={() => setProjectsVisible(false)}>Add New Project</button>
+                </div>
             )}
         </div>
     );

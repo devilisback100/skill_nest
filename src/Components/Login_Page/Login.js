@@ -16,6 +16,8 @@ function Login({ setUserData }) {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showAdminPassword, setShowAdminPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -78,7 +80,7 @@ function Login({ setUserData }) {
                 setError(data.message);
             }
         } catch (err) {
-
+            setError('Error connecting to the server.');
         } finally {
             setLoading(false);
         }
@@ -94,12 +96,21 @@ function Login({ setUserData }) {
                     value={usn}
                     onChange={(e) => setUsn(e.target.value)}
                 />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="password-input-container">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                        type="button"
+                        className="toggle-password"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? "👁️" : "👁"}
+                    </button>
+                </div>
                 <button onClick={handleLogin}>Login</button>
                 <button onClick={() => setNewUserModal(true)}>New User</button>
                 {error && <p className="error">{error}</p>}
@@ -116,12 +127,21 @@ function Login({ setUserData }) {
                             value={adminUSN}
                             onChange={(e) => setAdminUSN(e.target.value)}
                         />
-                        <input
-                            type="password"
-                            placeholder="Admin Password"
-                            value={adminPassword}
-                            onChange={(e) => setAdminPassword(e.target.value)}
-                        />
+                        <div className="password-input-container">
+                            <input
+                                type={showAdminPassword ? "text" : "password"}
+                                placeholder="Admin Password"
+                                value={adminPassword}
+                                onChange={(e) => setAdminPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                className="toggle-password"
+                                onClick={() => setShowAdminPassword(!showAdminPassword)}
+                            >
+                                {showAdminPassword ? "👁️" : "👁"}
+                            </button>
+                        </div>
                         <h3>New User Details</h3>
                         <input
                             type="text"
@@ -158,7 +178,7 @@ function Login({ setUserData }) {
                         <button onClick={handleNewUserSubmit} disabled={loading}>
                             {loading ? 'Adding...' : 'Add User'}
                         </button>
-                        <button onClick={() => setNewUserModal(false)}>Cancel</button>
+                        <button className="cancel-button" onClick={() => setNewUserModal(false)}>Cancel</button>
                     </div>
                 </div>
             )}

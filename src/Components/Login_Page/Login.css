@@ -12,53 +12,66 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: lavender;
+    background-color: #f4f7fc;
 }
 
 /* Login Box */
 .login-box {
-    background: white;
-    border-radius: 10px;
-    padding: 30px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 300px;
+    width: 100%;
+    max-width: 400px;
 }
 
-.login-box h1 {
-    color: #6a1b9a;
+h1 {
     margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
 }
 
-.login-box input {
+input {
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin-bottom: 20px;
+    border-radius: 4px;
     border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
-.login-box button {
-    width: 100%;
-    padding: 10px;
-    background-color: #6a1b9a;
-    color: white;
-    border: none;
-    border-radius: 5px;
     font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
-.login-box button:hover {
-    background-color: #4a148c;
+button:hover {
+    background-color: #45a049;
 }
 
-/* Error Message */
+button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    margin-left: 10px;
+}
+
+.cancel-button:hover {
+    background-color: #e53935;
+}
+
 .error {
     color: red;
-    font-size: 14px;
     margin-top: 10px;
 }
 
@@ -67,65 +80,36 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    padding: 20px;
 }
 
 .modal-content {
-    background: white;
+    background-color: white;
     padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.modal-content h2 {
-    color: #6a1b9a;
-    margin-bottom: 10px;
-}
-
-.modal-content h3 {
-    color: #333;
-    margin: 20px 0 10px;
-}
-
-.modal-content input {
+    border-radius: 8px;
+    max-width: 500px;
     width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-.modal-content button {
-    margin: 5px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #6a1b9a;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
+h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
 }
 
-.modal-content button:hover {
-    background-color: #4a148c;
-}
-
-/* Cancel Button Styling */
-.modal-content button:last-child {
-    background-color: #e57373;
-}
-
-.modal-content button:last-child:hover {
-    background-color: #d32f2f;
+h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
 }
 
 /* Animations */
@@ -139,4 +123,47 @@ body {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.password-input-container input {
+    width: calc(100% - 40px); /* Reduced width to accommodate the button */
+    margin-bottom: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.toggle-password {
+    position: relative; /* Changed from absolute to relative */
+    right: 0;
+    background: none;
+    border: 1px solid #ddd;
+    border-left: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    height: 42px; /* Match input height */
+    width: 40px; /* Fixed width for the button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    font-size: 1.2em;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+.toggle-password:focus {
+    outline: none;
 }
