@@ -11,7 +11,7 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("http://127.0.0.1:5000/get_all_users_data")
+        fetch("https://skill-nest-backend.onrender.com/get_all_users_data")
             .then((response) => response.json())
             .then((data) => {
                 if (data.status === "success") {
