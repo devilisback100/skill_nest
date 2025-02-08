@@ -1,46 +1,55 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Profile_page.css';
 import Update from './Update';
+import SkillRecommendations from './SkillRecommendations';
 
 const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints }) => {
-    const [name, setName] = useState(userData?.name || 'N/A');
-    const [email, setEmail] = useState(userData?.email || 'N/A');
-    const [usn, setUsn] = useState(userData?.usn || 'N/A');
-    const [prevMonthPoints, setPrevMonthPoints] = useState(userData?.prev_month_points || 0);
-    const [totalPoints, setTotalPoints] = useState(userData?.points || 0);
-    const [techSkills, setTechSkills] = useState(userData?.['Tech-skills'] || {});
-    const [softSkills, setSoftSkills] = useState(userData?.['Soft-skills'] || []);
-    const [projects, setProjects] = useState([]);
-    const [updateModalVisible, setUpdateModalVisible] = useState(false);
+    const location = useLocation();
+    const { user, readOnly, openUpdateModal } = location.state || {};
+    const [name, setName] = useState(user?.name || userData?.name || 'N/A');
+    const [email, setEmail] = useState(user?.email || userData?.email || 'N/A');
+    const [usn, setUsn] = useState(user?.usn || userData?.usn || 'N/A');
+    const [prevMonthPoints, setPrevMonthPoints] = useState(user?.prev_month_points || userData?.prev_month_points || 0);
+    const [totalPoints, setTotalPoints] = useState(user?.points || userData?.points || 0);
+    const [techSkills, setTechSkills] = useState(user?.['Tech-skills'] || userData?.['Tech-skills'] || {});
+    const [softSkills, setSoftSkills] = useState(user?.['Soft-skills'] || userData?.['Soft-skills'] || []);
+    const [projects, setProjects] = useState(user?.projects || userData?.projects || []);
+    const [socialProfiles, setSocialProfiles] = useState(user?.['Social_profiles'] || userData?.['Social_profiles'] || []);
+    const [updateModalVisible, setUpdateModalVisible] = useState(openUpdateModal || false);
     const [projectsVisible, setProjectsVisible] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (userData) {
-            setTechSkills(userData['Tech-skills'] || {});
-            setSoftSkills(userData['Soft-skills'] || []);
-            setProjects(userData.projects || []);
-            setName(userData.name || 'N/A');
-            setEmail(userData.email || 'N/A');
-            setUsn(userData.USN || 'N/A');
-            setPrevMonthPoints(userData.prev_month_points || 0);
-            setTotalPoints(userData.points || 0);
+        if (user || userData) {
+            setTechSkills(user?.['Tech-skills'] || userData['Tech-skills'] || {});
+            setSoftSkills(user?.['Soft-skills'] || userData['Soft-skills'] || []);
+            setProjects(user?.projects || userData.projects || []);
+            setName(user?.name || userData.name || 'N/A');
+            setEmail(user?.email || userData.email || 'N/A');
+            setUsn(user?.USN || userData.USN || 'N/A');
+            setPrevMonthPoints(user?.prev_month_points || userData.prev_month_points || 0);
+            setTotalPoints(user?.points || userData.points || 0);
+            setSocialProfiles(user?.['Social_profiles'] || userData['Social_profiles'] || []);
 
-            fetch('https://skill-nest-backend.onrender.com/get_projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ usn: userData.USN })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        setProjects(data.data || []);
-                    } else {
-                        console.error('Failed to fetch projects.');
-                    }
+            if (!user?.projects && !userData.projects) {
+                fetch('https://skill-nest-backend.onrender.com/get_projects', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usn: user?.USN || userData.USN })
                 })
-                .catch(err => console.error('Error fetching projects:', err));
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            setProjects(data.data || []);
+                        } else {
+                            console.error('Failed to fetch projects.');
+                        }
+                    })
+                    .catch(err => console.error('Error fetching projects:', err));
+            }
         }
-    }, [userData]);
+    }, [user, userData]);
 
     const getUsedSkills = () => {
         const usedSkills = new Set();
@@ -56,83 +65,126 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
 
     const usedSkills = getUsedSkills();
 
-    const sortedTechSkills = Object.keys(techSkills).sort((a, b) => {
-        if (usedSkills.has(a) && !usedSkills.has(b)) return -1;
-        if (!usedSkills.has(a) && usedSkills.has(b)) return 1;
-        return a.localeCompare(b);
-    });
+    const sortSkills = (skills, isArray = false) => {
+        const skillsArray = isArray ? skills : Object.keys(skills);
+        const used = skillsArray.filter(skill => usedSkills.has(skill));
+        const unused = skillsArray.filter(skill => !usedSkills.has(skill));
 
-    const sortedSoftSkills = softSkills.sort((a, b) => {
-        if (usedSkills.has(a) && !usedSkills.has(b)) return -1;
-        if (!usedSkills.has(a) && usedSkills.has(b)) return 1;
-        return a.localeCompare(b);
-    });
+        return [
+            ...used.sort((a, b) => a.localeCompare(b)),
+            ...unused.sort((a, b) => a.localeCompare(b))
+        ];
+    };
+
+    const sortedTechSkills = sortSkills(techSkills);
+    const sortedSoftSkills = sortSkills(softSkills, true);
+
+    const handleViewProjects = () => {
+        navigate('/projects', {
+            state: {
+                viewedUser: user,
+                readOnly: true
+            }
+        });
+    };
 
     return (
         <div className="profile-container">
-            <h1>Profile Page</h1>
+            <div className="profile-header">
+                <h1>{name}'s Profile</h1>
+                <p>{email}</p>
+            </div>
 
             <div className="user-data">
-                <h3>Your Profile Information</h3>
-                <div className="info">
-                    <span>Name:</span><p>{name}</p>
-                </div>
-                <div className="info">
-                    <span>USN:</span><p>{usn}</p>
-                </div>
-                <div className="info">
-                    <span>Email:</span><p>{email}</p>
-                </div>
-                <div className="info">
-                    <span>Previous Month Points:</span><p>{prevMonthPoints}</p>
-                </div>
-                <div className="info">
-                    <span>Total Points:</span><p>{totalPoints}</p>
+                <div className="info-card">
+                    <h3>Basic Information</h3>
+                    <div className="info-item">
+                        <span className="info-label">USN</span>
+                        <span className="info-value">{usn}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="info-label">Previous Month Points</span>
+                        <span className="info-value">{prevMonthPoints}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="info-label">Total Points</span>
+                        <span className="info-value">{totalPoints}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="info-label">Projects Count</span>
+                        <span className="info-value">{projects.length}</span>
+                    </div>
                 </div>
 
-                <div className="info">
-                    <span>Tech Skills:</span>
-                    <p>
-                        {sortedTechSkills.length > 0
-                            ? sortedTechSkills.map((skill, index) => (
-                                <React.Fragment key={skill}>
-                                    {index > 0 && ', '}
-                                    <span
-                                        style={{ 
-                                            color: usedSkills.has(skill) ? '#007bff' : 'inherit',
-                                            fontWeight: usedSkills.has(skill) ? 'bold' : 'normal'
-                                        }}
-                                    >
-                                        {skill}
-                                    </span>
-                                </React.Fragment>
+                <div className="info-card">
+                    <h3>Technical Skills</h3>
+                    <div className="skills-grid">
+                        {sortedTechSkills.map((skill) => (
+                            <div
+                                key={skill}
+                                className={`skill-tag ${usedSkills.has(skill) ? 'used' : ''}`}
+                            >
+                                {skill}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="info-card">
+                    <h3>Soft Skills</h3>
+                    <div className="skills-grid">
+                        {sortedSoftSkills.map((skill) => (
+                            <div
+                                key={skill}
+                                className={`skill-tag ${usedSkills.has(skill) ? 'used' : ''}`}
+                            >
+                                {skill}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="info-card">
+                    <h3>Social Profiles</h3>
+                    <div className="social-profiles">
+                        {socialProfiles.length > 0 ? (
+                            socialProfiles.map((profile, index) => (
+                                <div
+                                    key={index}
+                                    className="social-profile-item"
+                                    data-platform={profile.Social_profile_name}
+                                >
+                                    <a href={profile.link} target="_blank" rel="noopener noreferrer">
+                                        {profile.Social_profile_name}
+                                    </a>
+                                </div>
                             ))
-                            : 'No tech skills added'}
-                    </p>
+                        ) : (
+                            <p>No social profiles added</p>
+                        )}
+                    </div>
                 </div>
+            </div>
 
-                <div className="info">
-                    <span>Soft Skills:</span>
-                    <p>
-                        {sortedSoftSkills.length > 0
-                            ? sortedSoftSkills.map((skill, index) => (
-                                <React.Fragment key={skill}>
-                                    {index > 0 && ', '}
-                                    <span
-                                        style={{ 
-                                            color: usedSkills.has(skill) ? '#007bff' : 'inherit',
-                                            fontWeight: usedSkills.has(skill) ? 'bold' : 'normal'
-                                        }}
-                                    >
-                                        {skill}
-                                    </span>
-                                </React.Fragment>
-                            ))
-                            : 'No soft skills added'}
-                    </p>
-                </div>
+            <div className="action-buttons">
+                {!readOnly && (
+                    <button className="action-button primary-button" onClick={() => setUpdateModalVisible(true)}>
+                        Edit Profile
+                    </button>
+                )}
+                {readOnly && (
+                    <button className="action-button secondary-button" onClick={handleViewProjects}>
+                        View Projects
+                    </button>
+                )}
+            </div>
 
-                <button onClick={() => setUpdateModalVisible(true)}>Edit Profile</button>
+            <div className="recommendations-wrapper">
+                <SkillRecommendations
+                    userSkills={techSkills}
+                    techSkillPoints={techSkillPoints}
+                    projectSkills={projects.flatMap(p => p.skills_needed || [])}
+                />
             </div>
 
             {updateModalVisible && (

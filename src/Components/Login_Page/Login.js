@@ -89,36 +89,57 @@ function Login({ setUserData }) {
     return (
         <div className="login-container">
             <div className="login-box">
-                <h1>Login</h1>
-                <input
-                    type="text"
-                    placeholder="USN"
-                    value={usn}
-                    onChange={(e) => setUsn(e.target.value)}
-                />
-                <div className="password-input-container">
+                <div className="login-header">
+                    <h1>Welcome to SkillNest</h1>
+                    <p>Track, showcase, and improve your skills</p>
+                </div>
+
+                <div className="input-group">
+                    <input
+                        type="text"
+                        id="usn"
+                        placeholder=" "
+                        value={usn}
+                        onChange={(e) => setUsn(e.target.value)}
+                    />
+                    <label htmlFor="usn">USN</label>
+                </div>
+
+                <div className="input-group">
                     <input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Password"
+                        id="password"
+                        placeholder=" "
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
+                    <label htmlFor="password">Password</label>
                     <button
                         type="button"
-                        className="toggle-password"
+                        className="password-toggle"
                         onClick={() => setShowPassword(!showPassword)}
                     >
-                        {showPassword ? "👁️" : "👁"}
+                        <i className={`fas fa-${showPassword ? 'eye-slash' : 'eye'}`}></i>
                     </button>
                 </div>
-                <button onClick={handleLogin}>Login</button>
-                <button onClick={() => setNewUserModal(true)}>New User</button>
-                {error && <p className="error">{error}</p>}
+
+                {error && <div className="error-message">{error}</div>}
+
+                <div className="auth-buttons">
+                    <button className="auth-button login-button" onClick={handleLogin}>
+                        Sign In
+                    </button>
+                    <button 
+                        className="auth-button new-user-button" 
+                        onClick={() => setNewUserModal(true)}
+                    >
+                        New User
+                    </button>
+                </div>
             </div>
 
-            {/* Modal for New User */}
             {newUserModal && (
-                <div className="modal">
+                <div className="modal-overlay">
                     <div className="modal-content">
                         <h2>Admin Validation</h2>
                         <input

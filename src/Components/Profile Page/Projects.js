@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Projects.css';
 
-function Projects({ techSkillPoints, userData }) {
+function Projects({ techSkillPoints, userData, setUserData }) {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { viewedUser, readOnly, openAddProject } = location.state || {};
     const [projects, setProjects] = useState([]);
     const [newProject, setNewProject] = useState({
         title: '',
@@ -12,13 +16,14 @@ function Projects({ techSkillPoints, userData }) {
         teamProject: false,
         teamMembers: []
     });
+
     const [newSkillNeeded, setNewSkillNeeded] = useState('');
     const [newTeamMember, setNewTeamMember] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [showAddProjectForm, setShowAddProjectForm] = useState(false);
+    const [showAddProjectForm, setShowAddProjectForm] = useState(openAddProject || false);
 
-    const usn = useMemo(() => userData?.USN, [userData]);
+    const targetUsn = useMemo(() => viewedUser?.USN || userData?.USN, [viewedUser, userData]);
 
     useEffect(() => {
         let isMounted = true;
@@ -28,10 +33,9 @@ function Projects({ techSkillPoints, userData }) {
                 const response = await fetch('https://skill-nest-backend.onrender.com/get_projects', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usn: usn })
+                    body: JSON.stringify({ usn: targetUsn })
                 });
                 const data = await response.json();
-                console.log('Fetched projects:', data); // Debug log
                 if (isMounted && data.status === 'success') {
                     setProjects(data.data || []);
                 }
@@ -41,14 +45,14 @@ function Projects({ techSkillPoints, userData }) {
             }
         };
 
-        if (usn) {
+        if (targetUsn) {
             fetchProjects();
         }
 
         return () => {
             isMounted = false;
         };
-    }, [usn]);
+    }, [targetUsn]);
 
     const handleAddProject = async () => {
         if (loading) return;
@@ -117,9 +121,21 @@ function Projects({ techSkillPoints, userData }) {
         }
     };
 
+    const handleBack = () => {
+        navigate(-1);
+    };
+    const headerText = viewedUser ? `${viewedUser.name}'s Projects` : 'Your Projects';
+
     return (
         <div className="projects-container">
-            <h3>Your Projects</h3>
+            <div className="projects-header">
+                <h3>{headerText}</h3>
+                {viewedUser && (
+                    <button onClick={handleBack} className="back-button">
+                        Back to Profile
+                    </button>
+                )}
+            </div>
             <div className="projects-list">
                 {projects.length > 0 ? projects.map((project, index) => (
                     <div key={index} className="project-card">
@@ -148,7 +164,8 @@ function Projects({ techSkillPoints, userData }) {
                     </div>
                 )) : <p>No projects added</p>}
             </div>
-            <button onClick={() => setShowAddProjectForm(true)}>Add New Project</button>
+
+            {!readOnly && <button onClick={() => setShowAddProjectForm(true)}>Add New Project</button>}
 
             {showAddProjectForm && (
                 <div className="project-form">

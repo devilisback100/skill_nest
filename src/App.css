@@ -5,35 +5,39 @@ body {
   background-color: #f4f7fc;
   color: #333;
 }
+
 ::-webkit-scrollbar {
   width: 0px;
-  height: 0px;}
+  height: 0px;
+}
+
 /* Navigation bar styles */
 nav {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 20px;
   align-items: center;
-  background-color: #6a1b9a;
-  padding: 15px 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(145deg, #6a1b9a, #4a148c);
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 nav button {
-  padding: 12px 25px;
-  background-color: white;
-  color: #6a1b9a;
-  border: 2px solid white;
-  border-radius: 5px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  border-radius: 25px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-right: 15px;
 }
 
 nav button:hover {
-  background-color: #4a148c;
-  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 nav button:focus {
@@ -48,6 +52,10 @@ nav button.active {
 nav button:last-child {
   margin-right: 0;
   /* Remove right margin for the last button */
+}
+
+nav a {
+  text-decoration: none;
 }
 
 /* Container for general page content */

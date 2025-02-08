@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import Login from '../src/Components/Login_Page/Login';
-import ProfilePage from '../src/Components/Profile Page/Profile_Page';
-import Leaderboard from '../src/Components/Leaderboard/Leaderboard';
-import Projects from '../src/Components/Profile Page/Projects';
+import Login from './Components/Login_Page/Login';
+import ProfilePage from './Components/Profile Page/Profile_Page';
+import Leaderboard from './Components/Leaderboard/Leaderboard';
+import Projects from './Components/Profile Page/Projects';
+import About from './Components/About/About';
 import './App.css';
 
 function App() {
   const [userData, setUserData] = useState(null);
 
   const techSkillPoints = {
-    // AI/ML Skills
     "Machine Learning": 85,
     "Deep Learning": 90,
     "Artificial Intelligence": 90,
@@ -48,8 +48,6 @@ function App() {
     "Hugging Face": 85,
     "XGBoost": 78,
     "LightGBM": 78,
-
-    // Existing Skills
     "JavaScript": 60,
     "React.js": 70,
     "Python": 70,
@@ -126,6 +124,7 @@ function App() {
             <Link to="/profile"><button>Profile</button></Link>
             <Link to="/leaderboard"><button>Leaderboard</button></Link>
             <Link to="/projects"><button>Projects</button></Link>
+            <Link to="/about"><button>About</button></Link>
             <button onClick={handleSignOut}>Sign Out</button>
           </>
         ) : null}
@@ -149,7 +148,24 @@ function App() {
             ) : (
               <Navigate to="/" />
             )
-          }        />        <Route
+          }
+        />
+        <Route
+          path="/profile/:usn"
+          element={
+            userData ? (
+              <ProfilePage
+                userData={userData}
+                setUserData={setUserData}
+                techSkillPoints={techSkillPoints}
+                softSkillsPoints={softSkillsPoints}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
           path="/leaderboard"
           element={
             userData ? (
@@ -169,6 +185,18 @@ function App() {
             userData ? (
               <Projects
                 techSkillPoints={techSkillPoints}
+                userData={userData}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            userData ? (
+              <About
                 userData={userData}
               />
             ) : (

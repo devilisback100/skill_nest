@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Leaderboard.css";
 
 const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
     const [users, setUsers] = useState([]);
-    const [view, setView] = useState("overall"); // "overall", "monthly", or "filtered"
+    const [view, setView] = useState("overall");
     const [selectedTechSkills, setSelectedTechSkills] = useState([]);
     const [selectedSoftSkills, setSelectedSoftSkills] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch("https://skill-nest-backend.onrender.com/get_all_users_data")
+        fetch("http://127.0.0.1:5000/get_all_users_data")
             .then((response) => response.json())
             .then((data) => {
                 if (data.status === "success") {
@@ -75,6 +77,10 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
                     }))
                 )
                 : assignRanks(filteredUsers);
+
+    const handleViewProfile = (user) => {
+        navigate(`/profile/${user.USN}`, { state: { user, readOnly: true } });
+    };
 
     return (
         <div className="leaderboard-container">
@@ -153,7 +159,11 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
                         sortedUsers.map((user) => (
                             <tr key={user.USN}>
                                 <td>{user.rank}</td>
-                                <td>{user.name}</td>
+                                <td className="name-column">
+                                    <button className="view-profile-btn" onClick={() => handleViewProfile(user)}>
+                                        {user.name}
+                                    </button>
+                                </td>
                                 <td>{user.points}</td>
                                 {view === "monthly" && <td>{user.growth || 0}</td>}
                             </tr>

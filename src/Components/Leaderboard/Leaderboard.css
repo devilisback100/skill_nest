@@ -4,15 +4,15 @@
     margin: 50px auto;
     padding: 20px;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
 .title {
-    font-size: 2rem;
-    color: #6a1b9a;
-    margin-bottom: 20px;
+    font-size: 2.5rem;
+    color: #4a148c;
+    margin-bottom: 30px;
 }
 
 /* Skill Filters Section */
@@ -20,8 +20,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
 .skill-filters .dropdown-container {
@@ -37,64 +37,82 @@
     flex-direction: column;
     align-items: flex-start;
     background-color: #f7f7f7;
-    padding: 10px 15px;
+    padding: 15px 20px;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    min-width: 150px;
+    border-radius: 10px;
+    min-width: 200px;
     text-align: left;
 }
 
-.dropdown select {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
+.dropdown h3 {
+    margin-bottom: 10px;
+    color: #4a148c;
 }
 
-.skill-filters button {
-    padding: 12px 25px;
-    font-size: 16px;
-    background-color: #6a1b9a;
+.skill-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.skill-btn {
+    border: none;
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 14px;
+}
+
+.skill-btn:hover {
+    background-color: #ccc;
+}
+
+.skill-btn.selected {
+    background-color: #4a148c;
+    color: white;
+}
+
+.search-btn {
+    margin-top: 15px;
+    padding: 12px 30px;
+    background-color: #4a148c;
     color: white;
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-.skill-filters button:hover {
-    background-color: #4a0d6e;
-    transform: translateY(-2px);
-}
-
-.skill-filters button:active {
-    transform: translateY(0);
+.search-btn:hover {
+    background-color: #380d6e;
 }
 
 /* Toggle Buttons */
 .toggle-buttons {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .toggle-buttons button {
     margin: 0 10px;
-    padding: 10px 20px;
+    padding: 12px 25px;
     font-size: 16px;
     background-color: lavender;
-    border: 1px solid #6a1b9a;
-    border-radius: 5px;
+    border: 1px solid #4a148c;
+    border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .toggle-buttons button.active,
 .toggle-buttons button:hover {
-    background-color: #6a1b9a;
+    background-color: #4a148c;
     color: white;
 }
 
@@ -107,13 +125,13 @@
 
 .leaderboard-table th,
 .leaderboard-table td {
-    padding: 10px;
+    padding: 15px;
     border: 1px solid #ddd;
     text-align: center;
 }
 
 .leaderboard-table th {
-    background-color: #6a1b9a;
+    background-color: #4a148c;
     color: white;
     font-weight: bold;
 }
@@ -126,8 +144,31 @@
     background-color: #f1f1f1;
 }
 
+/* Adjust the width of the name column */
+.leaderboard-table td.name-column {
+    text-align: center;
+    padding-left: 0;
+}
+
+.view-profile-btn {
+    background: none;
+    border: none;
+    color: #4a148c;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: text-decoration 0.3s ease;
+}
+
+.view-profile-btn:hover {
+    text-decoration: underline;
+    background: none;
+    /* Ensure no background color on hover */
+}
+
 /* No Data Message */
-.leaderboard-table td[colspan="3"] {
+.leaderboard-table td[colspan="4"] {
     color: #777;
     font-size: 1rem;
 }
@@ -145,57 +186,6 @@
     .leaderboard-table th,
     .leaderboard-table td {
         font-size: 0.85rem;
-        padding: 8px;
+        padding: 10px;
     }
-}
-/* Leaderboard.css */
-
-/* Skill buttons container */
-.skill-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-/* Skill button styling */
-.skill-btn {
-    border: none;
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-size: 14px;
-}
-
-.skill-btn:hover {
-    background-color: #ddd;
-}
-
-.skill-btn.selected {
-    background-color: #007bff;
-    color: white;
-}
-
-/* Dropdown container */
-.dropdown h3 {
-    margin-bottom: 10px;
-}
-
-/* Search button styling */
-.search-btn {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.search-btn:hover {
-    background-color: #0056b3;
 }
