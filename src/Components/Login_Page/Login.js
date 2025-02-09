@@ -18,11 +18,13 @@ function Login({ setUserData }) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showAdminPassword, setShowAdminPassword] = useState(false);
+    const [loginLoading, setLoginLoading] = useState(false);  // Add this line
 
     const navigate = useNavigate();
 
     const handleLogin = async () => {
         try {
+            setLoginLoading(true);  // Add this line
             const response = await fetch('https://skill-nest-backend.onrender.com/check_usn_password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -38,6 +40,8 @@ function Login({ setUserData }) {
             }
         } catch (err) {
             setError('Error connecting to the server.');
+        } finally {
+            setLoginLoading(false);  // Add this line
         }
     };
 
@@ -126,8 +130,16 @@ function Login({ setUserData }) {
                 {error && <div className="error-message">{error}</div>}
 
                 <div className="auth-buttons">
-                    <button className="auth-button login-button" onClick={handleLogin}>
-                        Sign In
+                    <button 
+                        className="auth-button login-button" 
+                        onClick={handleLogin}
+                        disabled={loginLoading}
+                    >
+                        {loginLoading ? (
+                            <div className="loader"></div>
+                        ) : (
+                            'Sign In'
+                        )}
                     </button>
                     <button 
                         className="auth-button new-user-button" 
