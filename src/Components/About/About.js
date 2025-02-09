@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Achievements from '../Achievements/Achievements';
 import './About.css';
 
 const About = ({ userData }) => {
     const navigate = useNavigate();
     const [projectCount, setProjectCount] = useState(userData.projects ? userData.projects.length : 0);
-    const totalSkills = Object.keys(userData['Tech-skills']).length + userData['Soft-skills'].length;
+
+    // Extract dependencies for useMemo
+    const techSkillsLength = useMemo(() => Object.keys(userData['Tech-skills']).length, [userData]);
+    const softSkillsLength = useMemo(() => userData['Soft-skills'].length, [userData]);
+    const totalSkills = useMemo(() => techSkillsLength + softSkillsLength, [techSkillsLength, softSkillsLength]);
+
     const joinDate = new Date(userData.joinDate || Date.now()).toLocaleDateString();
 
     useEffect(() => {
@@ -19,13 +25,11 @@ const About = ({ userData }) => {
                 .then(data => {
                     if (data.status === 'success') {
                         setProjectCount(data.data.length);
-                    } else {
-                        console.error('Failed to fetch projects.');
                     }
                 })
                 .catch(err => console.error('Error fetching projects:', err));
         }
-    }, [userData]);
+    }, [userData.projects, userData.USN]);
 
     const handleUpdateSkills = () => {
         navigate('/profile', { state: { openUpdateModal: true } });
@@ -41,20 +45,6 @@ const About = ({ userData }) => {
             achievementsSection.scrollIntoView({ behavior: 'smooth' });
         }
     };
-
-    const achievements = [
-        { condition: totalSkills >= 5, icon: '🌟', title: 'Skill Explorer', description: 'Acquired 5+ skills' },
-        { condition: userData.points >= 2500, icon: '🏅', title: 'Skill Legend', description: 'Earned 2500+ points' },
-        { condition: userData.points >= 2000, icon: '🥇', title: 'Skill Grandmaster', description: 'Earned 2000+ points' },
-        { condition: userData.points >= 1500, icon: '🥈', title: 'Skill Master', description: 'Earned 1500+ points' },
-        { condition: userData.points >= 1000, icon: '🥉', title: 'Skill Prodigy', description: 'Earned 1000+ points' },
-        { condition: userData.points >= 500, icon: '🏆', title: 'Point Master', description: 'Earned 500+ points' },
-        { condition: projectCount >= 10, icon: '🏆', title: 'Project Legend', description: 'Completed 10+ projects' },
-        { condition: projectCount >= 5, icon: '🏅', title: 'Project Master', description: 'Completed 5+ projects' },
-        { condition: projectCount >= 3, icon: '💼', title: 'Project Expert', description: 'Completed 3+ projects' }
-    ];
-
-    const sortedAchievements = achievements.filter(achievement => achievement.condition).sort((a, b) => b.condition - a.condition);
 
     return (
         <div className="about-container">
@@ -76,12 +66,12 @@ const About = ({ userData }) => {
             </div>
 
             <div className="about-sections">
-                <div className="about-section">
+                <div className="about-section about-skillnest">
                     <h2>About SkillNest</h2>
                     <p>SkillNest is a platform designed to help students and professionals track, showcase, and improve their technical and soft skills. Build your portfolio, connect with others, and demonstrate your expertise.</p>
                 </div>
 
-                <div className="about-section">
+                <div className="about-section about-journey">
                     <h2>Your Journey</h2>
                     <div className="journey-timeline">
                         <div className="timeline-item">
@@ -108,20 +98,12 @@ const About = ({ userData }) => {
                     </div>
                 </div>
 
-                <div className="achievements-section">
+                <div className="about-section about-achievements">
                     <h2>Your Achievements</h2>
-                    <div className="achievements-grid">
-                        {sortedAchievements.map((achievement, index) => (
-                            <div key={index} className="achievement-item">
-                                <span className="achievement-icon">{achievement.icon}</span>
-                                <h3>{achievement.title}</h3>
-                                <p>{achievement.description}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <Achievements userData={userData} />
                 </div>
 
-                <div className="quick-actions">
+                <div className="about-section">
                     <h2>Quick Actions</h2>
                     <div className="action-buttons">
                         <button className="action-btn" onClick={handleUpdateSkills}>

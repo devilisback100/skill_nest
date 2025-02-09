@@ -24,6 +24,21 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
         return total;
     };
 
+    const calculateAchievements = () => {
+        const achievements = [];
+        const totalPoints = calculateTotalPoints();
+        const totalSkills = softSkills.length + Object.keys(techSkills).length;
+        const projectCount = userData.projects ? userData.projects.length : 0;
+
+        if (totalPoints >= 1000) achievements.push('Skills Master');
+        if (totalSkills >= 10) achievements.push('Jack of All Trades');
+        if (projectCount >= 5) achievements.push('Project Guru');
+        if (totalSkills >= 20 && projectCount >= 5) achievements.push('Skillful Project Manager');
+        if (totalSkills >= 45) achievements.push('Skill Legend');
+
+        return achievements;
+    };
+
     const handleAddSoftSkill = (skill) => {
         if (skill && !softSkills.includes(skill)) {
             setSoftSkills([...softSkills, skill]);
@@ -63,6 +78,7 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
         setLoading(true);
         try {
             const updatedPoints = calculateTotalPoints();
+            const updatedAchievements = calculateAchievements();
             const updateUserData = async (route, data) => {
                 const response = await fetch(`https://skill-nest-backend.onrender.com/${route}`, {
                     method: 'POST',
@@ -114,6 +130,7 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
                 'Tech-skills': techSkills,
                 'Social_profiles': socialProfiles,
                 points: updatedPoints,
+                achievements: updatedAchievements,
             });
             closeModal();
         } catch (error) {

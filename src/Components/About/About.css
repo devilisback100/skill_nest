@@ -41,7 +41,7 @@
 
 .about-sections {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: 1fr;
     gap: 30px;
 }
 
@@ -56,6 +56,18 @@
     color: #6a1b9a;
     margin-bottom: 20px;
     font-size: 1.5rem;
+}
+
+.about-skillnest {
+    grid-row: 1 / 2;
+}
+
+.about-journey {
+    grid-row: 2 / 3;
+}
+
+.about-achievements {
+    grid-row: 3 / 4;
 }
 
 .journey-timeline {
