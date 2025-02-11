@@ -1,10 +1,15 @@
+/* Main Container */
 .about-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    color: #333;
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 25px;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    text-align: center;
 }
 
+/* Header */
 .about-header {
     background: linear-gradient(145deg, #6a1b9a, #4a148c);
     border-radius: 15px;
@@ -13,6 +18,71 @@
     margin-bottom: 40px;
 }
 
+/* Section Styling */
+.about-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.about-section h2 {
+    color: #6a1b9a;
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+}
+
+.about-section p {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+/* New styles for the updated About page */
+.about-section.about-skillnest h3 {
+    color: #4a148c;
+    font-size: 1.4rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.about-section.about-skillnest ul {
+    text-align: left;
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.about-section.about-skillnest p {
+    line-height: 1.6;
+}
+
+/* User Information */
+.user-info {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.user-info h2 {
+    font-size: 1.8rem;
+    color: #4a148c;
+    margin-bottom: 15px;
+}
+
+.user-info p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.user-info p strong {
+    color: #6a1b9a;
+}
+
+/* User Stats Grid */
 .user-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -30,7 +100,7 @@
 .stat-card h3 {
     font-size: 2.5rem;
     margin: 0;
-    color: #fff;
+    color: #4a148c;
 }
 
 .stat-card p {
@@ -39,37 +109,7 @@
     opacity: 0.9;
 }
 
-.about-sections {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-}
-
-.about-section {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.about-section h2 {
-    color: #6a1b9a;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-}
-
-.about-skillnest {
-    grid-row: 1 / 2;
-}
-
-.about-journey {
-    grid-row: 2 / 3;
-}
-
-.about-achievements {
-    grid-row: 3 / 4;
-}
-
+/* Timeline for Skill Journey */
 .journey-timeline {
     position: relative;
     padding: 20px 0;
@@ -105,6 +145,7 @@
     color: #666;
 }
 
+/* Quick Actions Section */
 .quick-actions {
     text-align: center;
     padding: 30px;
@@ -113,9 +154,10 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Buttons */
 .action-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 15px;
     margin-top: 20px;
 }
@@ -124,9 +166,9 @@
     background: #6a1b9a;
     color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 500;
+    padding: 14px 20px;
+    border-radius: 30px;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
@@ -156,6 +198,7 @@
     left: 100%;
 }
 
+/* Achievements Section */
 .achievements-section {
     background: white;
     border-radius: 15px;
@@ -200,6 +243,7 @@
     opacity: 0.9;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
     .about-container {
         padding: 20px 10px;
@@ -210,6 +254,10 @@
     }
 
     .about-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .action-buttons {
         grid-template-columns: 1fr;
     }
 }

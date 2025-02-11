@@ -22,6 +22,7 @@
     position: relative;
     margin: auto;
     animation: slideIn 0.3s ease-out;
+    bottom: 90px;
 }
 
 .update-section {

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { ApiContext } from './contexts/ApiContext';  // Add this import
 import Login from './Components/Login_Page/Login';
 import ProfilePage from './Components/Profile Page/Profile_Page';
 import Leaderboard from './Components/Leaderboard/Leaderboard';
 import Projects from './Components/Profile Page/Projects';
 import About from './Components/About/About';
 import './App.css';
+import { API_BASE_URL } from './config';
 
 function App() {
   const [userData, setUserData] = useState(null);
@@ -116,95 +118,121 @@ function App() {
     setUserData(null);
   };
 
+  // Add API context provider
+  const apiConfig = {
+    baseUrl: API_BASE_URL,
+    endpoints: {
+      login: '/check_usn_password',
+      projects: '/get_projects',
+      addProject: '/add_project',
+      updateEmail: '/update_email',
+      updateSoftSkills: '/update_soft_skills',
+      updateTechSkills: '/update_tech_skills',
+      updatePassword: '/update_password',
+      updateSocialProfiles: '/update_social_profiles',
+      updatePoints: '/update_points',
+      getUserGrowth: '/get_user_growth',
+      // Add other endpoints here
+      createBatch: '/create_batch',
+      addNewUser: '/add_new_user',
+      getBatchUsers: '/get_batch_users',
+      checkAdmin: '/check_admin',
+      addUserToBatch: '/add_user_to_batch'
+    }
+  };
+
   return (
     <Router>
-      <nav>
-        {userData ? (
-          <>
-            <Link to="/profile"><button>Profile</button></Link>
-            <Link to="/leaderboard"><button>Leaderboard</button></Link>
-            <Link to="/projects"><button>Projects</button></Link>
-            <Link to="/about"><button>About</button></Link>
-            <button onClick={handleSignOut}>Sign Out</button>
-          </>
-        ) : null}
-      </nav>
+      {/* Wrap everything in API context provider */}
+      <ApiContext.Provider value={apiConfig}>
+        <nav>
+          {userData ? (
+            <>
+              <Link to="/profile"><button>Profile</button></Link>
+              <Link to="/leaderboard"><button>Leaderboard</button></Link>
+              <Link to="/projects"><button>Projects</button></Link>
+              <Link to="/about"><button>About</button></Link>
+              <button onClick={handleSignOut}>Sign Out</button>
+            </>
+          ) : null}
+        </nav>
 
-      <Routes>
-        <Route
-          path="/"
-          element={userData ? <Navigate to="/profile" /> : <Login setUserData={setUserData} />}
-        />
-        <Route
-          path="/profile"
-          element={
-            userData ? (
-              <ProfilePage
-                userData={userData}
-                setUserData={setUserData}
-                techSkillPoints={techSkillPoints}
-                softSkillsPoints={softSkillsPoints}
-              />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route
-          path="/profile/:usn"
-          element={
-            userData ? (
-              <ProfilePage
-                userData={userData}
-                setUserData={setUserData}
-                techSkillPoints={techSkillPoints}
-                softSkillsPoints={softSkillsPoints}
-              />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            userData ? (
-              <Leaderboard
-                userData={userData}
-                techSkillPoints={techSkillPoints}
-                softSkillsPoints={softSkillsPoints}
-              />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route
-          path="/projects"
-          element={
-            userData ? (
-              <Projects
-                techSkillPoints={techSkillPoints}
-                userData={userData}
-              />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            userData ? (
-              <About
-                userData={userData}
-              />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
-        />
-      </Routes>
+        <Routes>
+          <Route
+            path="/"
+            element={userData ? <Navigate to="/profile" /> : <Login setUserData={setUserData} />}
+          />
+          <Route
+            path="/profile"
+            element={
+              userData ? (
+                <ProfilePage
+                  userData={userData}
+                  setUserData={setUserData}
+                  techSkillPoints={techSkillPoints}
+                  softSkillsPoints={softSkillsPoints}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/profile/:usn"
+            element={
+              userData ? (
+                <ProfilePage
+                  userData={userData}
+                  setUserData={setUserData}
+                  techSkillPoints={techSkillPoints}
+                  softSkillsPoints={softSkillsPoints}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              userData ? (
+                <Leaderboard
+                  userData={userData}
+                  techSkillPoints={techSkillPoints}
+                  softSkillsPoints={softSkillsPoints}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              userData ? (
+                <Projects
+                  techSkillPoints={techSkillPoints}
+                  userData={userData}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              userData ? (
+                <About
+                  userData={userData}
+                />
+              ) : (
+                <Navigate to="/" />
+              )
+            }
+          />
+        </Routes>
+      </ApiContext.Provider>
     </Router>
   );
 }

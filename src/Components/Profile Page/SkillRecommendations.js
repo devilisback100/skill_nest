@@ -2,91 +2,57 @@ import React, { useMemo } from 'react';
 import './SkillRecommendations.css';
 
 const SkillRecommendations = ({ userSkills, techSkillPoints, projectSkills }) => {
-    // Move these objects outside of the component or make them useMemo dependencies
-    const skillPairs = useMemo(() => ({
-        "Machine Learning": ["Python", "TensorFlow", "PyTorch", "Scikit-learn", "NumPy", "Pandas"],
-        "Deep Learning": ["Python", "TensorFlow", "PyTorch", "CUDA", "NumPy"],
-        "Web Development": ["JavaScript", "React.js", "HTML", "CSS", "Node.js", "TypeScript"],
-        "Mobile Development": ["Flutter", "React Native", "Kotlin", "Swift"],
-        "DevOps": ["Docker", "Kubernetes", "Jenkins", "AWS", "Azure"],
-        "Data Science": ["Python", "Pandas", "NumPy", "Scikit-learn", "Jupyter"],
-        "Game Development": ["Unity", "C#", "Unreal Engine", "C++", "GameMaker Studio"]
-    }), []); // Empty dependency array since this object never changes
-
-    const careerPaths = useMemo(() => ({
-        "AI Engineer": ["Machine Learning", "Deep Learning", "Python", "TensorFlow"],
-        "Full Stack Developer": ["JavaScript", "React.js", "Node.js", "MongoDB"],
-        "Mobile Developer": ["Flutter", "React Native", "Firebase"],
-        "DevOps Engineer": ["Docker", "Kubernetes", "AWS", "Jenkins"],
-        "Data Scientist": ["Python", "Machine Learning", "Pandas", "NumPy"]
-    }), []); // Empty dependency array since this object never changes
-
     const getRecommendations = useMemo(() => {
-        const recommendations = new Set();
-        const userTechSkills = Object.keys(userSkills);
-        const projectSkillSet = new Set(projectSkills);
+        // Get skills user doesn't have
+        const unusedSkills = Object.keys(techSkillPoints).filter(
+            skill => !Object.keys(userSkills).includes(skill)
+        );
 
-        // Career path based recommendations
-        Object.entries(careerPaths).forEach(([career, requiredSkills]) => {
-            const hasPartialSkills = requiredSkills.some(skill => userTechSkills.includes(skill));
-            const needsMoreSkills = requiredSkills.some(skill => !userTechSkills.includes(skill));
+        // Create scoring system for skills
+        const scoredSkills = unusedSkills.map(skill => {
+            let score = 0;
 
-            if (hasPartialSkills && needsMoreSkills) {
-                requiredSkills
-                    .filter(skill => !userTechSkills.includes(skill))
-                    .forEach(skill => {
-                        if (techSkillPoints[skill]) {
-                            recommendations.add({
-                                skill,
-                                points: techSkillPoints[skill],
-                                reason: `Recommended for ${career} career path`
-                            });
-                        }
-                    });
+            // Higher score for skills used in projects
+            if (projectSkills.includes(skill)) {
+                score += 5;
             }
+
+            // Higher score for skills with higher points
+            score += techSkillPoints[skill] / 20;
+
+            // Add some randomization to avoid same recommendations
+            score += Math.random() * 2;
+
+            return { skill, score };
         });
 
-        // Project skills based recommendations
-        projectSkillSet.forEach(skill => {
-            if (!userTechSkills.includes(skill) && techSkillPoints[skill]) {
-                recommendations.add({
-                    skill,
-                    points: techSkillPoints[skill],
-                    reason: "Used in your project stack"
-                });
-            }
-        });
+        // Sort by score and get top 3 unique recommendations
+        const uniqueRecommendations = [...new Set(
+            scoredSkills
+                .sort((a, b) => b.score - a.score)
+                .map(item => item.skill)
+        )].slice(0, 3);
 
-        // Complementary skills recommendations
-        Object.entries(skillPairs).forEach(([mainSkill, relatedSkills]) => {
-            if (userTechSkills.includes(mainSkill)) {
-                relatedSkills.forEach(skill => {
-                    if (!userTechSkills.includes(skill) && techSkillPoints[skill]) {
-                        recommendations.add({
-                            skill,
-                            points: techSkillPoints[skill],
-                            reason: `Complements your ${mainSkill} skills`
-                        });
-                    }
-                });
-            }
-        });
-
-        return Array.from(recommendations).sort((a, b) => b.points - a.points).slice(0, 3);
-    }, [userSkills, techSkillPoints, projectSkills, skillPairs, careerPaths]);
+        return uniqueRecommendations.map(skill => ({
+            name: skill,
+            points: techSkillPoints[skill],
+            isProjectSkill: projectSkills.includes(skill)
+        }));
+    }, [userSkills, techSkillPoints, projectSkills]);
 
     return (
         <div className="recommendations-container">
-            <h3>Recommended Skills</h3>
-            <div className="recommendations-grid">
-                {getRecommendations.map((rec, index) => (
-                    <div key={index} className="recommendation-card">
-                        <div className="skill-name">{rec.skill}</div>
-                        <div className="skill-reason">{rec.reason}</div>
-                        <div className="skill-points">+{rec.points} points</div>
-                    </div>
-                ))}
-            </div>
+            {getRecommendations.map((skill, index) => (
+                <div key={index} className="recommendation-card">
+                    <h3>{skill.name}</h3>
+                    <p className="skill-points">Skill Points: {skill.points}</p>
+                    {skill.isProjectSkill && (
+                        <span className="project-skill-badge">
+                            Used in Projects
+                        </span>
+                    )}
+                </div>
+            ))}
         </div>
     );
 };

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './Update.css';
+import { ApiContext } from '../../contexts/ApiContext';
+import CustomAlert from '../CustomAlert/CustomAlert'; // Import CustomAlert
 
 function Update({ userData, setUserData, closeModal, techSkillPoints, softSkillsPoints }) {
     const [email, setEmail] = useState(userData.email || '');
@@ -14,6 +16,9 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
     const [newSoftSkill, setNewSoftSkill] = useState('');
     const [newTechSkill, setNewTechSkill] = useState('');
     const [loading, setLoading] = useState(false);
+    const [alertMessage, setAlertMessage] = useState(''); // Add state for alert message
+    const [showAlert, setShowAlert] = useState(false); // Add state to control alert visibility
+    const apiConfig = useContext(ApiContext);
 
     const calculateTotalPoints = () => {
         let total = 0;
@@ -80,7 +85,7 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
             const updatedPoints = calculateTotalPoints();
             const updatedAchievements = calculateAchievements();
             const updateUserData = async (route, data) => {
-                const response = await fetch(`https://skill-nest-backend.onrender.com/${route}`, {
+                const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints[route]}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -95,34 +100,37 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
             };
             const updatePromises = [];
             if (email !== userData.email) {
-                updatePromises.push(updateUserData('update_email', { usn: userData.USN, password: userData.password, new_email: email }));
+                updatePromises.push(updateUserData('updateEmail', { usn: userData.USN, password: userData.password, batch_id: userData.batch_id, new_email: email }));
             }
             if (JSON.stringify(softSkills) !== JSON.stringify(userData['Soft-skills'])) {
-                updatePromises.push(updateUserData('update_soft_skills', { usn: userData.USN, password: userData.password, new_soft_skills: softSkills }));
+                updatePromises.push(updateUserData('updateSoftSkills', { usn: userData.USN, password: userData.password, batch_id: userData.batch_id, new_soft_skills: softSkills }));
             }
             if (JSON.stringify(techSkills) !== JSON.stringify(userData['Tech-skills'])) {
-                updatePromises.push(updateUserData('update_tech_skills', { usn: userData.USN, password: userData.password, new_tech_skills: techSkills }));
+                updatePromises.push(updateUserData('updateTechSkills', { usn: userData.USN, password: userData.password, batch_id: userData.batch_id, new_tech_skills: techSkills }));
             }
             if (newPassword) {
                 if (newPassword !== confirmPassword) {
                     throw new Error('New passwords do not match');
                 }
-                updatePromises.push(updateUserData('update_password', {
+                updatePromises.push(updateUserData('updatePassword', {
                     usn: userData.USN,
                     old_password: currentPassword,
+                    batch_id: userData.batch_id,
                     new_password: newPassword
                 }));
             }
             if (JSON.stringify(socialProfiles) !== JSON.stringify(userData['Social_profiles'])) {
-                updatePromises.push(updateUserData('update_social_profiles', {
+                updatePromises.push(updateUserData('updateSocialProfiles', {
                     usn: userData.USN,
                     password: userData.password,
+                    batch_id: userData.batch_id,
                     new_social_profiles: socialProfiles
                 }));
             }
-            updatePromises.push(updateUserData('update_points', { usn: userData.USN, password: userData.password, new_points: updatedPoints }));
+            updatePromises.push(updateUserData('updatePoints', { usn: userData.USN, password: userData.password, batch_id: userData.batch_id, new_points: updatedPoints }));
             await Promise.all(updatePromises);
-            alert('Profile updated successfully!');
+            setAlertMessage('Profile updated successfully!'); // Set alert message
+            setShowAlert(true); // Show alert
             setUserData({
                 ...userData,
                 email,
@@ -132,12 +140,17 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
                 points: updatedPoints,
                 achievements: updatedAchievements,
             });
-            closeModal();
         } catch (error) {
-            alert(error.message || 'An error occurred while updating');
+            setAlertMessage(error.message || 'An error occurred while updating'); // Set alert message
+            setShowAlert(true); // Show alert
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
+        closeModal(); // Close the modal after the alert is acknowledged
     };
 
     return (
@@ -281,6 +294,12 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
                     </button>
                 </div>
             </div>
+            {showAlert && (
+                <CustomAlert
+                    message={alertMessage}
+                    onClose={handleCloseAlert}
+                />
+            )}
         </div>
     );
 }

@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+
+.skills-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #EDF2F7;
+}
+
+.skills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.skill-chip {
+    background: linear-gradient(145deg, #6a1b9a10, #4a148c15);
+    border: 1px solid #6a1b9a20;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.skill-chip.verified {
+    background: linear-gradient(145deg, #2196f310, #1976d215);
+    border: 1px solid #2196f320;
+    color: #1976d2;
+}
+
+.skill-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 20, 140, 0.1);
+    background: linear-gradient(145deg, #6a1b9a20, #4a148c25);
+}
+
+.skill-chip.verified:hover {
+    background: linear-gradient(145deg, #2196f320, #1976d225);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+}
+
+@media (max-width: 768px) {
+    .skills-container {
+        padding: 1rem;
+    }
+
+    .skills-row {
+        gap: 0.5rem;
+    }
+
+    .skill-chip {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

@@ -1,0 +1,11 @@
+.skill-search {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1bee7;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* ... other common styles ... */

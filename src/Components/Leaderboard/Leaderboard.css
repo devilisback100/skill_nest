@@ -189,3 +189,64 @@
         padding: 10px;
     }
 }
+
+/* New search functionality and selected skills */
+.skill-search {
+    width: 90%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.selected-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.selected-skill-tag {
+    background-color: #4a148c;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.selected-skill-tag button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+}
+
+.skill-options.scrollable {
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.skill-options.scrollable::-webkit-scrollbar {
+    width: 6px;
+}
+
+.skill-options.scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.skill-options.scrollable::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.skill-options.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

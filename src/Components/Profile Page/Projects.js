@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './Projects.css';
+import { ApiContext } from '../../contexts/ApiContext';
+import CustomAlert from '../CustomAlert/CustomAlert';
 
 function Projects({ techSkillPoints, userData, setUserData }) {
     const location = useLocation();
@@ -16,24 +18,29 @@ function Projects({ techSkillPoints, userData, setUserData }) {
         teamProject: false,
         teamMembers: []
     });
+    const [editMode, setEditMode] = useState(false);
+    const [projectToEdit, setProjectToEdit] = useState(null);
 
     const [newSkillNeeded, setNewSkillNeeded] = useState('');
     const [newTeamMember, setNewTeamMember] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showAddProjectForm, setShowAddProjectForm] = useState(openAddProject || false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const targetUsn = useMemo(() => viewedUser?.USN || userData?.USN, [viewedUser, userData]);
+    const targetBatchId = useMemo(() => viewedUser?.batch_id || userData?.batch_id, [viewedUser, userData]);
+    const apiConfig = useContext(ApiContext);
 
     useEffect(() => {
         let isMounted = true;
 
         const fetchProjects = async () => {
             try {
-                const response = await fetch('https://skill-nest-backend.onrender.com/get_projects', {
+                const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.projects}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usn: targetUsn })
+                    body: JSON.stringify({ usn: targetUsn, batch_id: targetBatchId })
                 });
                 const data = await response.json();
                 if (isMounted && data.status === 'success') {
@@ -45,26 +52,27 @@ function Projects({ techSkillPoints, userData, setUserData }) {
             }
         };
 
-        if (targetUsn) {
+        if (targetUsn && targetBatchId) {
             fetchProjects();
         }
 
         return () => {
             isMounted = false;
         };
-    }, [targetUsn]);
+    }, [targetUsn, targetBatchId, apiConfig]);
 
     const handleAddProject = async () => {
         if (loading) return;
         if (newProject.title && newProject.description) {
             setLoading(true);
             try {
-                const response = await fetch('https://skill-nest-backend.onrender.com/add_project', {
+                const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.addProject}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         usn: userData.USN,
                         password: userData.password,
+                        batch_id: userData.batch_id,
                         title: newProject.title,
                         description: newProject.description,
                         live_url: newProject.liveUrl,
@@ -88,16 +96,83 @@ function Projects({ techSkillPoints, userData, setUserData }) {
                         teamMembers: []
                     });
                     setShowAddProjectForm(false);
+                    setAlertMessage('Project added successfully!');
                 } else {
-                    setError(data.message);
+                    setAlertMessage(data.message);
                 }
             } catch (err) {
-                setError('Error connecting to the server.');
+                setAlertMessage('Error connecting to the server.');
             } finally {
                 setLoading(false);
             }
         } else {
-            alert('Please fill in the project title and description.');
+            setAlertMessage('Please fill in the project title and description.');
+        }
+    };
+
+    const handleEditProject = (project) => {
+        setNewProject({
+            title: project.title || '',
+            description: project.description || '',
+            liveUrl: project.live_url || '',
+            githubUrl: project.github_url || '',
+            skillsNeeded: project.skills_needed || [],
+            teamProject: project.team_project || false,
+            teamMembers: project.team_members || []
+        });
+        setEditMode(true);
+        setShowAddProjectForm(true);
+        setProjectToEdit(project);
+    };
+
+    const handleUpdateProject = async () => {
+        if (loading) return;
+        if (newProject.title && newProject.description) {
+            setLoading(true);
+            try {
+                const response = await fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.updateProject}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        usn: userData.USN,
+                        password: userData.password,
+                        batch_id: userData.batch_id,
+                        title: newProject.title,
+                        description: newProject.description,
+                        live_url: newProject.liveUrl,
+                        github_url: newProject.githubUrl,
+                        skills_needed: newProject.skillsNeeded,
+                        team_project: newProject.teamProject,
+                        team_members: newProject.teamMembers
+                    })
+                });
+
+                const data = await response.json();
+                if (data.status === 'success') {
+                    setProjects(prevProjects => prevProjects.map(project => project === projectToEdit ? newProject : project));
+                    setNewProject({
+                        title: '',
+                        description: '',
+                        liveUrl: '',
+                        githubUrl: '',
+                        skillsNeeded: [],
+                        teamProject: false,
+                        teamMembers: []
+                    });
+                    setShowAddProjectForm(false);
+                    setEditMode(false);
+                    setProjectToEdit(null);
+                    setAlertMessage('Project updated successfully!');
+                } else {
+                    setAlertMessage(data.message);
+                }
+            } catch (err) {
+                setAlertMessage('Error connecting to the server.');
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            setAlertMessage('Please fill in the project title and description.');
         }
     };
 
@@ -149,105 +224,70 @@ function Projects({ techSkillPoints, userData, setUserData }) {
                         <p>{project.description}</p>
                         <div className="skills-list">
                             {project.skills_needed && project.skills_needed.map((skill, index) => (
-                                <span key={index} className="skill-item">
-                                    {skill}
-                                </span>
+                                <span key={index} className="skill-item">{skill}</span>
                             ))}
                         </div>
                         <div className="team-members-list">
                             {project.team_members && project.team_members.map((member, index) => (
-                                <span key={index} className="team-member-item">
-                                    {member}
-                                </span>
+                                <span key={index} className="team-member-item">{member}</span>
                             ))}
                         </div>
+                        {!readOnly && (
+                            <button onClick={() => handleEditProject(project)}>Edit</button>
+                        )}
                     </div>
                 )) : <p>No projects added</p>}
             </div>
-
             {!readOnly && <button onClick={() => setShowAddProjectForm(true)}>Add New Project</button>}
-
             {showAddProjectForm && (
                 <div className="project-form">
-                    <h3>Add New Project</h3>
-                    <input
-                        type="text"
-                        placeholder="Project Title"
-                        value={newProject.title}
-                        onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                    />
-                    <textarea
-                        placeholder="Project Description"
-                        value={newProject.description}
-                        onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Live URL"
-                        value={newProject.liveUrl}
-                        onChange={(e) => setNewProject({ ...newProject, liveUrl: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="GitHub URL"
-                        value={newProject.githubUrl}
-                        onChange={(e) => setNewProject({ ...newProject, githubUrl: e.target.value })}
-                    />
+                    <h3>{editMode ? 'Edit Project' : 'Add New Project'}</h3>
+                    <input type="text" placeholder="Project Title" value={newProject.title} onChange={(e) => setNewProject({ ...newProject, title: e.target.value })} />
+                    <textarea placeholder="Project Description" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
+                    <input type="text" placeholder="Live URL" value={newProject.liveUrl} onChange={(e) => setNewProject({ ...newProject, liveUrl: e.target.value })} />
+                    <input type="text" placeholder="GitHub URL" value={newProject.githubUrl} onChange={(e) => setNewProject({ ...newProject, githubUrl: e.target.value })} />
                     <div className="skills-selector">
-                        <select
-                            value={newSkillNeeded}
-                            onChange={(e) => setNewSkillNeeded(e.target.value)}
-                        >
+                        <select value={newSkillNeeded} onChange={(e) => setNewSkillNeeded(e.target.value)}>
                             <option value="">Select a skill needed</option>
                             {Object.keys(techSkillPoints).map((skill, index) => (
-                                <option key={index} value={skill}>
-                                    {skill}
-                                </option>
+                                <option key={index} value={skill}>{skill}</option>
                             ))}
                         </select>
                         <button onClick={handleAddSkillNeeded}>Add Skill Needed</button>
                     </div>
                     <div className="skills-list">
                         {newProject.skillsNeeded.map((skill, index) => (
-                            <span key={index} className="skill-item">
-                                {skill}
-                            </span>
+                            <span key={index} className="skill-item">{skill}</span>
                         ))}
                     </div>
                     <div className="team-project">
                         <label>
-                            <input
-                                type="checkbox"
-                                checked={newProject.teamProject}
-                                onChange={(e) => setNewProject({ ...newProject, teamProject: e.target.checked })}
-                            />
+                            <input type="checkbox" checked={newProject.teamProject} onChange={(e) => setNewProject({ ...newProject, teamProject: e.target.checked })} />
                             Team Project
                         </label>
                         {newProject.teamProject && (
                             <>
-                                <input
-                                    type="text"
-                                    placeholder="Add Team Member"
-                                    value={newTeamMember}
-                                    onChange={(e) => setNewTeamMember(e.target.value)}
-                                />
+                                <input type="text" placeholder="Add Team Member" value={newTeamMember} onChange={(e) => setNewTeamMember(e.target.value)} />
                                 <button onClick={handleAddTeamMember}>Add Team Member</button>
                                 <div className="team-members-list">
                                     {newProject.teamMembers.map((member, index) => (
-                                        <span key={index} className="team-member-item">
-                                            {member}
-                                        </span>
+                                        <span key={index} className="team-member-item">{member}</span>
                                     ))}
                                 </div>
                             </>
                         )}
                     </div>
-                    <button onClick={handleAddProject} disabled={loading}>
-                        {loading ? 'Adding...' : 'Add Project'}
+                    <button onClick={editMode ? handleUpdateProject : handleAddProject} disabled={loading}>
+                        {loading ? (editMode ? 'Updating...' : 'Adding...') : (editMode ? 'Update Project' : 'Add Project')}
                     </button>
                     {error && <p className="error">{error}</p>}
-                    <button className="cancel-button" onClick={() => setShowAddProjectForm(false)}>Cancel</button>
+                    <button className="cancel-button" onClick={() => { setShowAddProjectForm(false); setEditMode(false); setProjectToEdit(null); }}>
+                        Cancel
+                    </button>
                 </div>
+            )}
+            {alertMessage && (
+                <CustomAlert message={alertMessage} onClose={() => setAlertMessage('')} />
             )}
         </div>
     );

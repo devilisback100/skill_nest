@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react"; // Add useContext
 import { useNavigate } from "react-router-dom";
+import { ApiContext } from '../../contexts/ApiContext'; // Add this import
 import "./Leaderboard.css";
 
 const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
@@ -8,19 +9,33 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
     const [selectedTechSkills, setSelectedTechSkills] = useState([]);
     const [selectedSoftSkills, setSelectedSoftSkills] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const [techSearchTerm, setTechSearchTerm] = useState("");
+    const [softSearchTerm, setSoftSearchTerm] = useState("");
     const navigate = useNavigate();
+    const apiConfig = useContext(ApiContext); // Add this line
 
     useEffect(() => {
-        fetch("https://skill-nest-backend.onrender.com/get_all_users_data")
-            .then((response) => response.json())
-            .then((data) => {
+        const fetchUsersData = async () => {
+            try {
+                const response = await fetch(`${apiConfig.baseUrl}/get_all_users_data`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ batch_id: userData.batch_id })
+                });
+                const data = await response.json();
                 if (data.status === "success") {
                     setUsers(data.data);
-                } else {
-                    console.error("Failed to fetch user data.");
+                    setFilteredUsers(data.data);
                 }
-            });
-    }, []);
+            } catch (error) {
+                console.error("Error fetching users:", error);
+            }
+        };
+
+        if (userData?.batch_id) {
+            fetchUsersData();
+        }
+    }, [userData, apiConfig.baseUrl]); // Add apiConfig.baseUrl to dependencies
 
     const handleSkillSelection = (skill, skillType) => {
         if (skillType === "tech") {
@@ -79,7 +94,28 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
                 : assignRanks(filteredUsers);
 
     const handleViewProfile = (user) => {
-        navigate(`/profile/${user.USN}`, { state: { user, readOnly: true } });
+        navigate('/profile', {
+            state: {
+                user: {
+                    ...user,
+                    'Tech-skills': user['Tech-skills'] || {},
+                    'Soft-skills': user['Soft-skills'] || [],
+                    projects: user.Projects || [],
+                    'Social_profiles': user['Social_profiles'] || [],
+                    batch_id: user.batch_id,
+                    batch_name: user.batch_name,
+                    points: user.points || 0,
+                    prev_month_points: user.prev_month_points || 0
+                },
+                readOnly: true
+            }
+        });
+    };
+
+    const filterSkills = (skills, searchTerm) => {
+        return Object.keys(skills).filter(skill =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+        );
     };
 
     return (
@@ -90,30 +126,64 @@ const Leaderboard = ({ userData, techSkillPoints, softSkillsPoints }) => {
                 <div className="skill-filters">
                     <div className="dropdown">
                         <h3>Select Tech Skills:</h3>
-                        <div className="skill-options">
-                            {Object.keys(techSkillPoints).map((skill, index) => (
-                                <button
-                                    key={index}
-                                    className={`skill-btn ${selectedTechSkills.includes(skill) ? "selected" : ""}`}
-                                    onClick={() => handleSkillSelection(skill, "tech")}
-                                >
+                        <input
+                            type="text"
+                            className="skill-search"
+                            placeholder="Search tech skills..."
+                            value={techSearchTerm}
+                            onChange={(e) => setTechSearchTerm(e.target.value)}
+                        />
+                        <div className="selected-skills">
+                            {selectedTechSkills.map((skill, index) => (
+                                <span key={index} className="selected-skill-tag">
                                     {skill}
-                                </button>
+                                    <button onClick={() => handleSkillSelection(skill, "tech")}>×</button>
+                                </span>
+                            ))}
+                        </div>
+                        <div className="skill-options scrollable">
+                            {filterSkills(techSkillPoints, techSearchTerm).map((skill, index) => (
+                                !selectedTechSkills.includes(skill) && (
+                                    <button
+                                        key={index}
+                                        className="skill-btn"
+                                        onClick={() => handleSkillSelection(skill, "tech")}
+                                    >
+                                        {skill}
+                                    </button>
+                                )
                             ))}
                         </div>
                     </div>
 
                     <div className="dropdown">
                         <h3>Select Soft Skills:</h3>
-                        <div className="skill-options">
-                            {Object.keys(softSkillsPoints).map((skill, index) => (
-                                <button
-                                    key={index}
-                                    className={`skill-btn ${selectedSoftSkills.includes(skill) ? "selected" : ""}`}
-                                    onClick={() => handleSkillSelection(skill, "soft")}
-                                >
+                        <input
+                            type="text"
+                            className="skill-search"
+                            placeholder="Search soft skills..."
+                            value={softSearchTerm}
+                            onChange={(e) => setSoftSearchTerm(e.target.value)}
+                        />
+                        <div className="selected-skills">
+                            {selectedSoftSkills.map((skill, index) => (
+                                <span key={index} className="selected-skill-tag">
                                     {skill}
-                                </button>
+                                    <button onClick={() => handleSkillSelection(skill, "soft")}>×</button>
+                                </span>
+                            ))}
+                        </div>
+                        <div className="skill-options scrollable">
+                            {filterSkills(softSkillsPoints, softSearchTerm).map((skill, index) => (
+                                !selectedSoftSkills.includes(skill) && (
+                                    <button
+                                        key={index}
+                                        className="skill-btn"
+                                        onClick={() => handleSkillSelection(skill, "soft")}
+                                    >
+                                        {skill}
+                                    </button>
+                                )
                             ))}
                         </div>
                     </div>
