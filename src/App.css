@@ -51,7 +51,6 @@ nav button.active {
 
 nav button:last-child {
   margin-right: 0;
-  /* Remove right margin for the last button */
 }
 
 nav a {

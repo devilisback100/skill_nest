@@ -17,7 +17,7 @@ const About = ({ userData }) => {
                 navigate('/profile', { state: { scrollToAchievements: true } });
                 break;
             case 'findTeam':
-                navigate('/team-builder', { state: { openTeamFinder: true } });
+                window.open('https://sutradahara-2.onrender.com/', '_blank');
                 break;
             default:
                 break;

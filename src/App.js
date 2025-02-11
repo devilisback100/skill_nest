@@ -152,6 +152,7 @@ function App() {
               <Link to="/leaderboard"><button>Leaderboard</button></Link>
               <Link to="/projects"><button>Projects</button></Link>
               <Link to="/about"><button>About</button></Link>
+              <a href="https://sutradahara-2.onrender.com/" target="_blank" rel="noopener noreferrer"><button>Chatbot</button></a>
               <button onClick={handleSignOut}>Sign Out</button>
             </>
           ) : null}
