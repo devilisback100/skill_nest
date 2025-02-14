@@ -76,6 +76,22 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
 
     const getUsedSkills = () => {
         const usedSkills = new Set();
+        const projects = readOnly ? user?.Projects : userData?.Projects;
+
+        const normalizeSkill = (skill) => {
+            return skill.trim().toLowerCase().replace(/\s+/g, ' ');
+        };
+
+        if (projects && Array.isArray(projects)) {
+            projects.forEach(project => {
+                const projectSkills = project.skills_needed || [];
+                if (Array.isArray(projectSkills)) {
+                    projectSkills.forEach(skill => {
+                        usedSkills.add(normalizeSkill(skill));
+                    });
+                }
+            });
+        }
         return usedSkills;
     };
 

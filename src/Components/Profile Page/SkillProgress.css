@@ -4,10 +4,10 @@
 
 .skills-title {
     font-family: 'Inter', sans-serif;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    color: #2D3748;
-    margin-bottom: 1.5rem;
+    color: #333;
+    margin-bottom: 15px;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #EDF2F7;
 }
@@ -15,24 +15,25 @@
 .skills-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 10px;
 }
 
 .skill-chip {
     background: linear-gradient(145deg, #6a1b9a10, #4a148c15);
     border: 1px solid #6a1b9a20;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
+    padding: 8px 15px;
+    border-radius: 20px;
     font-size: 0.9rem;
-    color: #4a5568;
+    color: #333;
     font-weight: 500;
     transition: all 0.3s ease;
 }
 
 .skill-chip.verified {
-    background: linear-gradient(145deg, #2196f310, #1976d215);
-    border: 1px solid #2196f320;
-    color: #1976d2;
+    background: #1976d2;
+    color: white;
+    font-weight: 500;
+    border: none;
 }
 
 .skill-chip:hover {
@@ -42,8 +43,14 @@
 }
 
 .skill-chip.verified:hover {
-    background: linear-gradient(145deg, #2196f320, #1976d225);
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.1);
+    background: #1565c0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(25, 118, 210, 0.2);
+}
+
+.skills-container {
+    padding: 15px;
+    margin-bottom: 20px;
 }
 
 @media (max-width: 768px) {
