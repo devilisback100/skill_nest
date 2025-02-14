@@ -8,30 +8,26 @@ body {
 
 /* Login Container */
 .login-container {
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    height: 100vh;
+    background-color: #f5f5f5;
 }
 
 /* Login Box */
 .login-box {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 400px;
-    position: relative;
-    backdrop-filter: blur(10px);
-    animation: slideUp 0.5s ease-out;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .login-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .login-header h1 {
@@ -47,71 +43,46 @@ body {
 
 .input-group {
     position: relative;
-    margin-bottom: 25px;
-    width: 90%;
-    margin: 0 auto 20px;
+    margin-bottom: 20px;
 }
 
 .input-group input {
     width: 100%;
-    padding: 15px 20px;
-    border: 2px solid #e1bee7;
-    border-radius: 12px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.input-group input:focus {
-    border-color: #6a1b9a;
-    box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.1);
-    outline: none;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .input-group label {
     position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: white;
-    padding: 0 5px;
-    color: #666;
+    top: 10px;
+    left: 10px;
+    color: #999;
     transition: all 0.3s ease;
-    pointer-events: none;
+    background-color: white;
 }
 
 .input-group input:focus+label,
 .input-group input:not(:placeholder-shown)+label {
-    top: 0;
-    font-size: 14px;
-    color: #6a1b9a;
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    color: #4a148c;
 }
 
 .auth-buttons {
-    display: grid;
-    gap: 15px;
-    margin-top: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 .auth-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.login-button {
-    background: linear-gradient(145deg, #6a1b9a, #4a148c);
+    width: 48%;
+    padding: 10px;
+    background-color: #4a148c;
     color: white;
-}
-
-.new-user-button {
-    background: #f3e5f5;
-    color: #6a1b9a;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .auth-button:hover {
@@ -199,6 +170,7 @@ button:disabled {
     padding: 20px;
     backdrop-filter: blur(5px);
     animation: fadeIn 0.3s ease-out;
+    overflow-y: scroll;
 }
 
 .modal-content {
@@ -390,6 +362,45 @@ h3 {
     .login-box {
         padding: 30px 20px;
     }
+
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .login-header p {
+        font-size: 0.8rem;
+    }
+
+    .input-group input {
+        padding: 8px;
+    }
+
+    .input-group label {
+        font-size: 0.8rem;
+    }
+
+    .auth-button {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        padding: 20px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .modal-content input {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .modal-content button {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
 }
 
 /* Media query for smaller screens */
@@ -398,6 +409,17 @@ h3 {
         width: 90%;
         padding: 20px;
         margin: 0 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-buttons {
+        flex-direction: column;
+    }
+
+    .auth-button {
+        width: 100%;
+        margin-bottom: 10px;
     }
 }
 
@@ -449,4 +471,122 @@ h3 {
 .modal-tab.active {
     background: #4a148c;
     color: white;
+}
+
+/* Password Requirements */
+.password-requirements {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.password-requirements p {
+    margin: 0 0 5px 0;
+    color: #4a148c;
+    font-weight: bold;
+}
+
+.password-requirements ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.password-requirements li {
+    color: #666;
+    margin: 3px 0;
+}
+
+/* ...existing styles... */
+
+.help-button {
+    background: transparent;
+    color: #4a148c;
+    border: 2px solid #4a148c;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.help-button:hover {
+    background: #4a148c;
+    color: white;
+}
+
+.instructions-modal {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.instructions-content {
+    padding: 20px;
+}
+
+.instruction-section {
+    margin-bottom: 25px;
+}
+
+.instruction-section h3 {
+    color: #4a148c;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.instruction-section p {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.instruction-section ul,
+.instruction-section ol {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.instruction-section li {
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.instruction-section ul li {
+    list-style-type: disc;
+}
+
+.instruction-section ol li {
+    list-style-type: decimal;
+}
+
+.close-instructions {
+    background: #4a148c;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    width: 100%;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.close-instructions:hover {
+    background: #6a1b9a;
+}
+
+@media (max-width: 480px) {
+    .instructions-modal {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .instruction-section h3 {
+        font-size: 1.1rem;
+    }
+
+    .instruction-section {
+        font-size: 0.9rem;
+    }
 }

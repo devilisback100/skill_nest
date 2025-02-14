@@ -15,11 +15,33 @@ body {
 nav {
   display: flex;
   justify-content: center;
-  gap: 20px;
   align-items: center;
-  background: linear-gradient(145deg, #6a1b9a, #4a148c);
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  background-color: #4a148c;
+}
+
+.menu-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-links button {
+  background-color: #4a148c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.nav-links.open {
+  display: block;
 }
 
 nav button {
@@ -100,6 +122,22 @@ nav a {
   .container {
     padding: 10px;
   }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-links button {
+    width: 100%;
+    padding: 15px 0;
+  }
 }
 
 /* Button for the Sign Out functionality */
@@ -134,4 +172,77 @@ footer a {
 
 footer a:hover {
   text-decoration: underline;
+}
+
+/* Chatbot widget styles */
+.chatbot-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-widget:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.chatbot-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 45px;
+}
+
+.chatbot-tooltip {
+  position: absolute;
+  right: 70px;
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.chatbot-widget:hover .chatbot-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.chatbot-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid #333;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+
+@media (max-width: 768px) {
+  .chatbot-widget {
+    bottom: 15px;
+    right: 15px;
+    width: 55px;
+    height: 55px;
+  }
+
+  .chatbot-icon {
+    width: 45px;
+    height: 45px;
+  }
 }

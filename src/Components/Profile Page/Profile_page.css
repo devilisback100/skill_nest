@@ -9,7 +9,7 @@ body {
 .profile-container {
     max-width: 1200px;
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 20px;
 }
 
 /* Profile Header */
@@ -18,8 +18,11 @@ body {
     color: white;
     padding: 2.5rem 2rem;
     border-radius: 20px;
-    margin-bottom: 2rem;
+    margin-bottom: 20px;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .header-content h1 {
@@ -28,6 +31,20 @@ body {
     font-weight: 600;
     margin-bottom: 1rem;
     color: white;
+}
+
+.profile-header h1 {
+    font-size: 24px;
+    color: white;
+}
+
+.profile-header button {
+    padding: 10px 20px;
+    background-color: #4a148c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .user-details {
@@ -172,42 +189,6 @@ body {
     border-bottom: 2px solid #f0f0f0;
 }
 
-/* Projects Section */
-.projects-preview {
-    display: grid;
-    gap: 1rem;
-}
-
-.project-card {
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    transition: transform 0.3s ease;
-}
-
-.project-card:hover {
-    transform: translateY(-3px);
-}
-
-.project-card h3 {
-    color: #2d3748;
-    margin: 0 0 0.5rem 0;
-}
-
-.project-skills {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.skill-tag {
-    padding: 0.25rem 0.75rem;
-    background: #e9ecef;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    color: #4a5568;
-}
-
 /* Skills Overview Styles */
 .skills-overview {
     margin-bottom: 2rem;
@@ -338,6 +319,7 @@ body {
 
     .profile-header {
         padding: 2rem 1rem;
+        flex-direction: column;
     }
 
     .stats-grid {
@@ -352,6 +334,11 @@ body {
     .detail-separator {
         display: none;
     }
+
+    .profile-header button {
+        width: 100%;
+        margin-top: 10px;
+    }
 }
 
 /* ...existing styles... */
@@ -362,3 +349,207 @@ body {
 }
 
 /* ...rest of existing styles... */
+
+.profile-content {
+    display: flex;
+    gap: 20px;
+}
+
+.profile-content .profile-info,
+.profile-content .profile-stats {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .profile-content {
+        flex-direction: column;
+    }
+}
+
+/* See More/Less functionality */
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.collapsed {
+    max-height: 150px;
+}
+
+.expanded {
+    max-height: 2000px;
+}
+
+.see-more-button {
+    display: none;
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: #4a148c;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.see-more-button:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .see-more-button {
+        display: block;
+    }
+
+    .skills-container.collapsed,
+    .social-profiles.collapsed {
+        position: relative;
+    }
+
+    .skills-container.collapsed::after,
+    .social-profiles.collapsed::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(transparent, white);
+        pointer-events: none;
+    }
+}
+
+/* ...existing styles... */
+
+.achievements-container {
+    position: relative;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    /* ...existing mobile styles... */
+
+    .skills-container.collapsed,
+    .social-profiles.collapsed,
+    .achievements-container.collapsed {
+        position: relative;
+    }
+
+    .skills-container.collapsed::after,
+    .social-profiles.collapsed::after,
+    .achievements-container.collapsed::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(transparent, white);
+        pointer-events: none;
+    }
+}
+
+/* ...rest of existing styles... */
+
+/* Collapsible Content Styles */
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+@media (min-width: 769px) {
+    .collapsible-content {
+        max-height: none !important;
+        overflow: visible;
+    }
+
+    .see-more-button {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .collapsed {
+        max-height: 150px;
+    }
+
+    .expanded {
+        max-height: 2000px;
+    }
+
+    /* ...existing mobile styles... */
+
+    .section {
+        padding: 1rem;
+    }
+
+    .stats-grid {
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+/* ...rest of existing styles... */
+
+/* Desktop Override Styles */
+@media (min-width: 769px) {
+    .collapsible-content {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .see-more-button {
+        display: none !important;
+    }
+
+    .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+    }
+
+    .section {
+        padding: 2rem;
+    }
+}
+
+/* Project Section Specific Styles */
+.projects-section {
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+.projects-section .collapsible-content {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.projects-section .see-more-button {
+    display: none !important;
+}
+
+/* ...rest of existing code... */
+
+.view-projects-btn {
+    background-color: #4a148c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.view-projects-btn:hover {
+    background-color: #6a1b9a;
+}
+
+/* ...existing code... */

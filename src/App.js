@@ -11,6 +11,7 @@ import { API_BASE_URL } from './config';
 
 function App() {
   const [userData, setUserData] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false); // Add state for menu
 
   const techSkillPoints = {
     "Machine Learning": 85,
@@ -146,17 +147,28 @@ function App() {
       {/* Wrap everything in API context provider */}
       <ApiContext.Provider value={apiConfig}>
         <nav>
-          {userData ? (
-            <>
-              <Link to="/profile"><button>Profile</button></Link>
-              <Link to="/leaderboard"><button>Leaderboard</button></Link>
-              <Link to="/projects"><button>Projects</button></Link>
-              <Link to="/about"><button>About</button></Link>
-              <a href="https://sutradahara-2.onrender.com/" target="_blank" rel="noopener noreferrer"><button>Chatbot</button></a>
-              <button onClick={handleSignOut}>Sign Out</button>
-            </>
-          ) : null}
+          <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
+            <i className={`fas ${menuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+          </div>
+          <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
+            {userData ? (
+              <>
+                <Link to="/profile"><button>Profile</button></Link>
+                <Link to="/leaderboard"><button>Leaderboard</button></Link>
+                <Link to="/projects"><button>Projects</button></Link>
+                <Link to="/about"><button>About</button></Link>
+                <button onClick={handleSignOut}>Sign Out</button>
+              </>
+            ) : null}
+          </div>
         </nav>
+
+        {userData && (
+          <div className="chatbot-widget" onClick={() => window.open('https://sutradahara-2.onrender.com/', '_blank')}>
+            <img src="./chat_bot_image.jpg" alt="AI Assistant" className="chatbot-icon" />
+            <div className="chatbot-tooltip">Ask AI Assistant</div>
+          </div>
+        )}
 
         <Routes>
           <Route

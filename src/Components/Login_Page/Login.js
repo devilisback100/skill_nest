@@ -33,9 +33,40 @@ function Login({ setUserData }) {
     const [showModal, setShowModal] = useState(false);
     const [modalType, setModalType] = useState(''); // 'batch' or 'user'
     const [alertMessage, setAlertMessage] = useState(''); // Add state for alert message
+    const [showInstructions, setShowInstructions] = useState(false); // Add state for instructions modal
 
     const navigate = useNavigate();
     const apiConfig = useContext(ApiContext);
+
+    const validatePassword = (password) => {
+        const minLength = 7;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumbers = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        const errors = [];
+        if (password.length < minLength) {
+            errors.push('Password must be at least 7 characters long');
+        }
+        if (!hasUpperCase) {
+            errors.push('Password must contain at least one uppercase letter');
+        }
+        if (!hasLowerCase) {
+            errors.push('Password must contain at least one lowercase letter');
+        }
+        if (!hasNumbers) {
+            errors.push('Password must contain at least one number');
+        }
+        if (!hasSpecialChar) {
+            errors.push('Password must contain at least one special character');
+        }
+
+        return {
+            isValid: errors.length === 0,
+            errors: errors
+        };
+    };
 
     const handleLogin = async () => {
         try {
@@ -61,6 +92,13 @@ function Login({ setUserData }) {
     };
 
     const handleNewUserSubmit = async () => {
+        const passwordValidation = validatePassword(newUserData.password);
+
+        if (!passwordValidation.isValid) {
+            setAlertMessage(passwordValidation.errors.join('\n'));
+            return;
+        }
+
         try {
             setLoading(true);
             const userPayload = {
@@ -214,10 +252,20 @@ function Login({ setUserData }) {
                 />
                 <input
                     type="password"
-                    placeholder="New User Password"
+                    placeholder="New User Password (7+ chars, upper & lower case, numbers, symbols)"
                     value={newUserData.password}
                     onChange={(e) => setNewUserData(prev => ({ ...prev, password: e.target.value }))}
                 />
+                <div className="password-requirements">
+                    <p>Password must contain:</p>
+                    <ul>
+                        <li>At least 7 characters</li>
+                        <li>At least one uppercase letter</li>
+                        <li>At least one lowercase letter</li>
+                        <li>At least one number</li>
+                        <li>At least one special character (!@#$%^&*)</li>
+                    </ul>
+                </div>
                 <input
                     type="text"
                     placeholder="New User Name"
@@ -237,12 +285,65 @@ function Login({ setUserData }) {
         );
     };
 
+    const renderInstructions = () => {
+        return (
+            <div className="instructions-content">
+                <h2>How to Use SkillNest</h2>
+
+                <div className="instruction-section">
+                    <h3>Understanding Batches</h3>
+                    <p>A batch represents a group or class of users (e.g., "CSE-2024" or "AI-ML-Group-01")</p>
+                    <ul>
+                        <li>Each batch has a unique Batch ID</li>
+                        <li>Batches are managed by batch administrators</li>
+                        <li>Users within the same batch can compare progress and skills</li>
+                    </ul>
+                </div>
+
+                <div className="instruction-section">
+                    <h3>Getting Started</h3>
+                    <ol>
+                        <li>If you're new:
+                            <ul>
+                                <li>Ask your batch admin for your credentials</li>
+                                <li>Or click "Add New User" to create an account</li>
+                            </ul>
+                        </li>
+                        <li>If you're creating a new batch:
+                            <ul>
+                                <li>Click "Create New Batch"</li>
+                                <li>Fill in batch details and admin information</li>
+                                <li>Save your Batch ID for future reference</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div className="instruction-section">
+                    <h3>Logging In</h3>
+                    <ol>
+                        <li>Enter your Batch ID</li>
+                        <li>Enter your USN (University Serial Number)</li>
+                        <li>Enter your Password</li>
+                    </ol>
+                </div>
+
+                <button className="close-instructions" onClick={() => setShowInstructions(false)}>
+                    Got it!
+                </button>
+            </div>
+        );
+    };
+
     return (
         <div className="login-container">
             <div className="login-box">
                 <div className="login-header">
                     <h1>Welcome to SkillNest</h1>
                     <p>Track, showcase, and improve your skills</p>
+                    <button className="help-button" onClick={() => setShowInstructions(true)}>
+                        How it works?
+                    </button>
                 </div>
 
                 <div className="welcome-buttons">
@@ -330,6 +431,13 @@ function Login({ setUserData }) {
                         <button className="cancel-button" onClick={() => setShowModal(false)}>
                             Cancel
                         </button>
+                    </div>
+                </div>
+            )}
+            {showInstructions && (
+                <div className="modal-overlay">
+                    <div className="modal-content instructions-modal">
+                        {renderInstructions()}
                     </div>
                 </div>
             )}

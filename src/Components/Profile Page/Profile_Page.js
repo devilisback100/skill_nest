@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Profile_page.css';
 import Update from './Update';
 import { ApiContext } from '../../contexts/ApiContext';
@@ -9,6 +9,7 @@ import SkillRecommendations from './SkillRecommendations';
 
 const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints }) => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { user, readOnly, openUpdateModal } = location.state || {};
     const [name, setName] = useState(readOnly ? user?.name : userData?.name || 'N/A');
     const [email, setEmail] = useState(readOnly ? user?.email : userData?.email || 'N/A');
@@ -18,39 +19,32 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
     const [totalPoints, setTotalPoints] = useState(readOnly ? user?.points : userData?.points || 0);
     const [techSkills, setTechSkills] = useState(readOnly ? user?.['Tech-skills'] : userData?.['Tech-skills'] || {});
     const [softSkills, setSoftSkills] = useState(readOnly ? user?.['Soft-skills'] : userData?.['Soft-skills'] || []);
-    const [projects, setProjects] = useState(readOnly ? user?.projects : userData?.projects || []);
     const [socialProfiles, setSocialProfiles] = useState(readOnly ? user?.['Social_profiles'] : userData?.['Social_profiles'] || []);
     const [updateModalVisible, setUpdateModalVisible] = useState(openUpdateModal || false);
     const apiConfig = useContext(ApiContext);
+    const [expandedSections, setExpandedSections] = useState({
+        skills: false,
+        social: false,
+        achievements: false  // Add achievements to expandedSections
+    });
+
+    const toggleSection = (section) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
 
     useEffect(() => {
         if (user || userData) {
             setTechSkills(user?.['Tech-skills'] || userData['Tech-skills'] || {});
             setSoftSkills(user?.['Soft-skills'] || userData['Soft-skills'] || []);
-            setProjects(user?.projects || userData.projects || []);
             setName(user?.name || userData.name || 'N/A');
             setEmail(user?.email || userData.email || 'N/A');
             setUsn(user?.USN || userData?.USN || 'N/A');
             setPrevMonthPoints(user?.prev_month_points || userData?.prev_month_points || 0);
             setTotalPoints(user?.points || userData?.points || 0);
             setSocialProfiles(user?.['Social_profiles'] || userData['Social_profiles'] || []);
-
-            if (!user?.projects && !userData.projects) {
-                fetch(`${apiConfig.baseUrl}${apiConfig.endpoints.projects}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usn: user?.USN || userData.USN, batch_id: user?.batch_id || userData.batch_id })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            setProjects(data.data || []);
-                        } else {
-                            console.error('Failed to fetch projects.');
-                        }
-                    })
-                    .catch(err => console.error('Error fetching projects:', err));
-            }
         }
     }, [user, userData, apiConfig]);
 
@@ -82,17 +76,19 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
 
     const getUsedSkills = () => {
         const usedSkills = new Set();
-        if (projects && projects.length > 0) {
-            projects.forEach(project => {
-                if (project.skills_needed) {
-                    project.skills_needed.forEach(skill => usedSkills.add(skill));
-                }
-            });
-        }
         return usedSkills;
     };
 
     const usedSkills = getUsedSkills();
+
+    const viewProjects = () => {
+        navigate('/projects', {
+            state: {
+                viewedUser: user,
+                readOnly: true
+            }
+        });
+    };
 
     return (
         <div className="profile-container">
@@ -134,9 +130,10 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
                 </div>
             </div>
             <div className="main-content">
-                <div className="section skills-overview">
+                {/* Skills Section */}
+                <section className="section">
                     <h2>Skills Overview</h2>
-                    <div className="skills-container">
+                    <div className={`skills-container collapsible-content ${expandedSections.skills ? 'expanded' : 'collapsed'}`}>
                         <div className="tech-skills">
                             <SkillProgress skillsData={techSkills} type="tech" usedSkills={usedSkills} />
                         </div>
@@ -144,29 +141,59 @@ const ProfilePage = ({ userData, setUserData, techSkillPoints, softSkillsPoints 
                             <SkillProgress skillsData={softSkills} type="soft" usedSkills={usedSkills} />
                         </div>
                     </div>
-                </div>
-                <div className="section social-section">
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('skills')}
+                    >
+                        {expandedSections.skills ? 'See Less' : 'See More'}
+                    </button>
+                </section>
+
+                {/* Social Profiles Section */}
+                <section className="section">
                     <h2>Social Profiles</h2>
-                    <div className="social-links">
-                        {socialProfiles.map((profile, index) => (
-                            <a key={index} href={profile.link} target="_blank" rel="noopener noreferrer" className="social-link">
-                                <span>{profile.Social_profile_name}</span>
-                            </a>
-                        ))}
+                    <div className={`social-profiles collapsible-content ${expandedSections.social ? 'expanded' : 'collapsed'}`}>
+                        <div className="social-links">
+                            {socialProfiles.map((profile, index) => (
+                                <a key={index} href={profile.link} target="_blank" rel="noopener noreferrer" className="social-link">
+                                    <span>{profile.Social_profile_name}</span>
+                                </a>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('social')}
+                    >
+                        {expandedSections.social ? 'See Less' : 'See More'}
+                    </button>
+                </section>
+
                 <div className="section recommendations-section">
                     <h2>Recommended Skills</h2>
                     <SkillRecommendations
                         userSkills={techSkills}
                         techSkillPoints={techSkillPoints}
-                        projectSkills={projects.flatMap(p => p.skills_needed || [])}
+                        projectSkills={[]}
                     />
                 </div>
                 <div className="section achievements-section">
                     <h2>Achievements</h2>
-                    <Achievements userData={readOnly ? user : userData} />
+                    <div className={`achievements-container collapsible-content ${expandedSections.achievements ? 'expanded' : 'collapsed'}`}>
+                        <Achievements userData={readOnly ? user : userData} />
+                    </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('achievements')}
+                    >
+                        {expandedSections.achievements ? 'See Less' : 'See More'}
+                    </button>
                 </div>
+                {readOnly && (
+                    <button onClick={viewProjects} className="view-projects-btn">
+                        View Projects
+                    </button>
+                )}
             </div>
             {updateModalVisible && (
                 <Update

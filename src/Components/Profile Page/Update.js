@@ -18,6 +18,14 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
     const [loading, setLoading] = useState(false);
     const [alertMessage, setAlertMessage] = useState(''); // Add state for alert message
     const [showAlert, setShowAlert] = useState(false); // Add state to control alert visibility
+    const [expandedSections, setExpandedSections] = useState({
+        basicInfo: false,
+        password: false,
+        social: false,
+        skills: false
+    });
+    const [techSearchTerm, setTechSearchTerm] = useState("");
+    const [softSearchTerm, setSoftSearchTerm] = useState("");
     const apiConfig = useContext(ApiContext);
 
     const calculateTotalPoints = () => {
@@ -153,128 +161,189 @@ function Update({ userData, setUserData, closeModal, techSkillPoints, softSkills
         closeModal(); // Close the modal after the alert is acknowledged
     };
 
+    const toggleSection = (section) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
+
+    const filterSkills = (skills, searchTerm) => {
+        return Object.keys(skills).filter(skill =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    };
+
     return (
         <div className="update-container">
             <div className="update-modal">
                 {/* Basic Information Section */}
                 <div className="update-section">
                     <h3>Update Profile</h3>
-                    <div className="form-group">
-                        <label htmlFor="email">Email Address</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                        />
+                    <div className={`section-content collapsible-content ${expandedSections.basicInfo ? 'expanded' : 'collapsed'}`}>
+                        <div className="form-group">
+                            <label htmlFor="email">Email Address</label>
+                            <input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                            />
+                        </div>
                     </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('basicInfo')}
+                    >
+                        {expandedSections.basicInfo ? 'See Less' : 'See More'}
+                    </button>
                 </div>
 
                 <div className="update-section">
                     <h4>Change Password</h4>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            placeholder="Current Password"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                        />
+                    <div className={`section-content collapsible-content ${expandedSections.password ? 'expanded' : 'collapsed'}`}>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                placeholder="Current Password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                placeholder="New Password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="password"
+                                placeholder="Confirm New Password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            placeholder="New Password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <input
-                            type="password"
-                            placeholder="Confirm New Password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('password')}
+                    >
+                        {expandedSections.password ? 'See Less' : 'See More'}
+                    </button>
                 </div>
 
                 <div className="update-section">
                     <h4>Social Profiles</h4>
-                    <div className="social-profiles-form">
-                        <input
-                            type="text"
-                            placeholder="Platform (e.g., LinkedIn)"
-                            value={newSocialPlatform}
-                            onChange={(e) => setNewSocialPlatform(e.target.value)}
-                        />
-                        <input
-                            type="url"
-                            placeholder="Profile URL"
-                            value={newSocialLink}
-                            onChange={(e) => setNewSocialLink(e.target.value)}
-                        />
+                    <div className={`section-content collapsible-content ${expandedSections.social ? 'expanded' : 'collapsed'}`}>
+                        <div className="social-profiles-form">
+                            <input
+                                type="text"
+                                placeholder="Platform (e.g., LinkedIn)"
+                                value={newSocialPlatform}
+                                onChange={(e) => setNewSocialPlatform(e.target.value)}
+                            />
+                            <input
+                                type="url"
+                                placeholder="Profile URL"
+                                value={newSocialLink}
+                                onChange={(e) => setNewSocialLink(e.target.value)}
+                            />
+                            <button onClick={handleAddSocialProfile}>Add</button>
+                        </div>
+                        <div className="social-profiles-list">
+                            {socialProfiles.map((profile, index) => (
+                                <div key={index} className="skill-item">
+                                    <span>{profile.Social_profile_name}</span>
+                                    <button onClick={() => handleRemoveSocialProfile(profile.Social_profile_name)}>×</button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <button onClick={handleAddSocialProfile}>Add Social Profile</button>
-                    <div className="social-profiles-list">
-                        {socialProfiles.map((profile, index) => (
-                            <div key={index} className="skill-item">
-                                <span>{profile.Social_profile_name}</span>
-                                <button onClick={() => handleRemoveSocialProfile(profile.Social_profile_name)}>×</button>
-                            </div>
-                        ))}
-                    </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('social')}
+                    >
+                        {expandedSections.social ? 'See Less' : 'See More'}
+                    </button>
                 </div>
 
                 <div className="update-section">
                     <h4>Skills</h4>
-                    <div className="skills-group">
-                        <h5>Technical Skills</h5>
-                        <div className="skills-selector">
-                            <select
-                                value={newTechSkill}
-                                onChange={(e) => setNewTechSkill(e.target.value)}
-                            >
-                                <option value="">Select a tech skill</option>
-                                {Object.keys(techSkillPoints).map((skill, index) => (
-                                    <option key={index} value={skill}>{skill}</option>
+                    <div className={`section-content collapsible-content ${expandedSections.skills ? 'expanded' : 'collapsed'}`}>
+                        <div className="skills-group">
+                            <h5>Technical Skills</h5>
+                            <div className="skills-search">
+                                <input
+                                    type="text"
+                                    placeholder="Search technical skills..."
+                                    value={techSearchTerm}
+                                    onChange={(e) => setTechSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="skills-selector">
+                                <select
+                                    value={newTechSkill}
+                                    onChange={(e) => setNewTechSkill(e.target.value)}
+                                >
+                                    <option value="">Select a tech skill</option>
+                                    {filterSkills(techSkillPoints, techSearchTerm).map((skill, index) => (
+                                        <option key={index} value={skill}>{skill}</option>
+                                    ))}
+                                </select>
+                                <button onClick={() => handleAddTechSkill(newTechSkill)}>Add</button>
+                            </div>
+                            <div className="skills-list">
+                                {Object.keys(techSkills).map((skill, index) => (
+                                    <div key={index} className="skill-item">
+                                        <span>{skill}</span>
+                                        <button onClick={() => handleRemoveTechSkill(skill)}>×</button>
+                                    </div>
                                 ))}
-                            </select>
-                            <button onClick={() => handleAddTechSkill(newTechSkill)}>Add</button>
+                            </div>
                         </div>
-                        <div className="skills-list">
-                            {Object.keys(techSkills).map((skill, index) => (
-                                <div key={index} className="skill-item">
-                                    <span>{skill}</span>
-                                    <button onClick={() => handleRemoveTechSkill(skill)}>×</button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
-                    <div className="skills-group">
-                        <h5>Soft Skills</h5>
-                        <div className="skills-selector">
-                            <select
-                                value={newSoftSkill}
-                                onChange={(e) => setNewSoftSkill(e.target.value)}
-                            >
-                                <option value="">Select a soft skill</option>
-                                {Object.keys(softSkillsPoints).map((skill, index) => (
-                                    <option key={index} value={skill}>{skill}</option>
+                        <div className="skills-group">
+                            <h5>Soft Skills</h5>
+                            <div className="skills-search">
+                                <input
+                                    type="text"
+                                    placeholder="Search soft skills..."
+                                    value={softSearchTerm}
+                                    onChange={(e) => setSoftSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="skills-selector">
+                                <select
+                                    value={newSoftSkill}
+                                    onChange={(e) => setNewSoftSkill(e.target.value)}
+                                >
+                                    <option value="">Select a soft skill</option>
+                                    {filterSkills(softSkillsPoints, softSearchTerm).map((skill, index) => (
+                                        <option key={index} value={skill}>{skill}</option>
+                                    ))}
+                                </select>
+                                <button onClick={() => handleAddSoftSkill(newSoftSkill)}>Add</button>
+                            </div>
+                            <div className="skills-list">
+                                {softSkills.map((skill, index) => (
+                                    <div key={index} className="skill-item">
+                                        <span>{skill}</span>
+                                        <button onClick={() => handleRemoveSoftSkill(skill)}>×</button>
+                                    </div>
                                 ))}
-                            </select>
-                            <button onClick={() => handleAddSoftSkill(newSoftSkill)}>Add</button>
-                        </div>
-                        <div className="skills-list">
-                            {softSkills.map((skill, index) => (
-                                <div key={index} className="skill-item">
-                                    <span>{skill}</span>
-                                    <button onClick={() => handleRemoveSoftSkill(skill)}>×</button>
-                                </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
+                    <button
+                        className="see-more-button"
+                        onClick={() => toggleSection('skills')}
+                    >
+                        {expandedSections.skills ? 'See Less' : 'See More'}
+                    </button>
                 </div>
 
                 <div className="points-display">
